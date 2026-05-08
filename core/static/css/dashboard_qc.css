@@ -1,0 +1,107 @@
+/* ================= GLOBAL & BODY ================= */
+body {
+    /* Warna latar belakang abu-abu sangat terang agar Card putih lebih menonjol */
+    background-color: #f4f7f6; 
+}
+
+/* ================= LAYOUT UTAMA ================= */
+/* 
+   Asumsi: Sidebar kamu memiliki lebar sekitar 250px dan posisinya fixed di kiri.
+   Class .content perlu diberi margin-left agar tidak tertutup oleh sidebar.
+*/
+.content {
+    margin-left: 250px; 
+    padding: 30px;
+    min-height: 100vh;
+    transition: all 0.3s ease-in-out;
+}
+
+/* ================= KPI CARDS ================= */
+.card {
+    border: none;
+    border-radius: 12px; /* Membuat sudut card lebih halus */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Bayangan lembut khas dashboard modern */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Efek melayang (hover) saat kursor diarahkan ke card */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Garis pemisah transparan */
+}
+
+.card-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-title {
+    font-size: 3rem; /* Memperbesar ukuran angka KPI */
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ================= TABEL DATA TERBARU ================= */
+h5 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+
+/* Membungkus tabel dengan gaya modern */
+.table {
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden; /* Penting: agar sudut tabel mengikuti border-radius */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border-collapse: separate; /* Menghindari konflik border Bootstrap dengan border-radius */
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: #e9ecef;
+    color: #495057;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+    padding: 12px;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    text-align: center;
+    padding: 12px;
+    color: #555;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Efek highlight saat baris tabel disorot */
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+/* Penyesuaian layar untuk Tablet dan HP */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0; /* Menghilangkan margin jika sidebar disembunyikan/berubah menjadi toggle di HP */
+        padding: 15px;
+    }
+    
+    .card-title {
+        font-size: 2rem;
+    }
+}

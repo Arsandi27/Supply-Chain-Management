@@ -1,0 +1,63 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/penjualan.css' %}">
+    <title>Stok Penjualan</title>
+</head>
+
+<body>
+    {% include 'parts/sidebar_penjualan.html' %}
+    <div class="content">
+        <h2>Stok Penjualan</h2>
+
+        <div style="display:flex; gap:20px;">
+
+            <div style="padding:20px; background:#e3f2fd;">
+                <h4>Total Stok PCS</h4>
+                <h2>{{ total_pcs }}</h2>
+            </div>
+
+            <div style="padding:20px; background:#e8f5e9;">
+                <h4>Total Stok M3</h4>
+                <h2>{{ total_m3|floatformat:3 }}</h2>
+            </div>
+
+        </div>
+
+        <h3>Stok Hasil Produksi (Terbaru)</h3>
+
+        <table border="1">
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Produk</th>
+                <th>Grade</th>
+                <th>Sisa PCS</th>
+                <th>Sisa M3</th>
+            </tr>
+            {% for d in stok_terbaru %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ d.tanggal_produksi|date:"d F Y" }}</td>
+                <td>{{ d.nama_hasil_produksi }}</td>
+                <td>
+                    {% if d.qc and d.qc.quality %}
+                    {{ d.qc.quality }}
+                    {% else %}
+                    <span style="color:red;">Belum QC</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ d.sisa_pcs }}</td>
+                <td>{{ d.sisa_m3|floatformat:3 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+
+</html>

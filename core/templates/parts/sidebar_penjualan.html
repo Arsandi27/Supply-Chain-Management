@@ -1,0 +1,54 @@
+{%load static%}
+<link rel="stylesheet" href="{% static 'css/sidebar_penjualan.css' %}">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- SIDEBAR PENJUALAN -->
+<div class="sidebar">
+        <h3 class="sidebar-title">
+    <a href="{% url 'dashboard_penjualan' %}" style="text-decoration: none; color: inherit;">
+        Penjualan
+    </a>
+</h3>
+
+   <ul class="sidebar-menu">
+        <li>
+            <a href="{% url 'pembeli_list' %}">
+                <!-- Icon: Users (Data Pembeli) -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20" style="margin-right: 8px; vertical-align: middle;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                </svg>
+                <span>Data Pembeli</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'penjualan_list' %}">
+                <!-- Icon: Shopping Cart (Data Penjualan) -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20" style="margin-right: 8px; vertical-align: middle;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                </svg>
+                <span>Data Penjualan</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'stok_penjualan' %}">
+                <!-- Icon: Stacked Boxes (Stok Hasil Produksi) -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20" style="margin-right: 8px; vertical-align: middle;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
+                </svg>
+                <span>Stok Hasil Produksi</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{% url 'rekap_penjualan' %}">
+                <!-- Icon: Chart Line / Arrow Trending Up (Rekap Penjualan) -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20" style="margin-right: 8px; vertical-align: middle;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                </svg>
+                <span>Rekap Penjualan</span>
+            </a>
+        </li>
+    </ul>   
+</div>

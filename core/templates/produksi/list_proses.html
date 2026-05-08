@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanggal Proses Produksi</title>
+    <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
+</head>
+
+<body>
+    {% include 'parts/sidebar_produksi.html' %}
+    <div class="content">
+        <h2>Proses Produksi</h2>
+        <button onclick="openAdd()">+ Tambah</button>
+
+        <table border="1">
+            <tr>
+                <th>No</th>
+                <th>Tanggal Produksi</th>
+                <th>Keterangan</th>
+                <th>Aksi</th>
+            </tr>
+            {% for d in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ d.tanggal_produksi }}</td>
+                <td>{{ d.keterangan }}</td>
+                <td>
+                    <button onclick="openEdit('{{ d.id }}')">Edit</button>
+                    <button onclick="openDelete('{{ d.id }}')">Hapus</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!-- ADD -->
+    <div class="modal" id="addModal" style="display:none">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">X</span>
+            <form method="post" action="{% url 'proses_produksi_add' %}">
+                {% csrf_token %}
+                <input type="date" name="tanggal_produksi"><br>
+                <textarea name="keterangan"></textarea><br>
+                <button>Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT -->
+    <div class="modal" id="editModal" style="display:none">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">X</span>
+            <form method="post" id="editForm">
+                {% csrf_token %}
+                <input type="date" name="tanggal_produksi"><br>
+                <textarea name="keterangan"></textarea><br>
+                <button>Update</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DELETE -->
+    <div class="modal" id="deleteModal" style="display:none">
+        <span class="close" onclick="closeModal('addModal')">X</span>
+        <div class="modal-content">
+            <form method="post" id="deleteForm">
+                {% csrf_token %}
+                <button>Ya</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+<script>
+    function openAdd() { addModal.style.display = 'block' }
+    function openEdit(id) {
+        editModal.style.display = 'block'
+        editForm.action = '/produksi/edit/' + id + '/'
+    }
+    function openDelete(id) {
+        deleteModal.style.display = 'block'
+        deleteForm.action = '/produksi/delete/' + id + '/'
+    }
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+</script>
+
+</html>

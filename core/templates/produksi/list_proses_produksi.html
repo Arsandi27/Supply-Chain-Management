@@ -1,0 +1,151 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proses Produksi</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
+</head>
+
+<body>
+    {% include 'parts/sidebar_produksi.html' %}
+    <div class="content">
+        <h2>Proses Produksi</h2>
+        <button onclick="openAdd()">+ Tambah</button>
+        <form method="get" style="margin-bottom:15px">
+            <input type="text" name="bahan" placeholder="Cari Nama Bahan" value="{{ nama_bahan|default:'' }}">
+
+            <label>Dari Tanggal:</label>
+            <input type="date" name="tanggal_mulai" value="{{ tanggal_mulai|default:'' }}">
+
+            <label>Sampai Tanggal:</label>
+            <input type="date" name="tanggal_selesai" value="{{ tanggal_selesai|default:'' }}">
+
+            <button type="submit">Filter</button>
+            <a href="{% url 'pemakaian_bahan_list' %}">
+                <button type="button">Reset</button>
+            </a>
+
+            <button type="button" onclick="exportExcel()">
+                Export Excel
+            </button>
+        </form>
+        <table border="1">
+            <tr>
+                <th>No</th>
+                <th>Tanggal Produksi</th>
+                <th>Bahan</th>
+                <th>PCS</th>
+                <th>M3</th>
+                <th>Aksi</th>
+            </tr>
+
+            {% for d in data_detail %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ d.proses_produksi.tanggal_produksi|date:"d F Y" }}</td>
+                <td>{{ d.bahan_baku_masuk }}</td>
+                <td>{{ d.jumlah_pcs }}</td>
+                <td>{{ d.jumlah_m3 }}</td>
+                <td><button onclick="openEdit('{{ d.id }}')">Edit</button>
+                    <button onclick="openDelete('{{ d.id }}')">Hapus</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="modal" id="addModal" style="display:none">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">X</span>
+            <form method="post" action="{% url 'pemakaian_bahan_add' %}">
+                {% csrf_token %}
+
+                <select name="proses">
+                    {% for p in produksi %}
+                    <option value="{{ p.id }}">{{ p }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <select name="bahan_master_id">
+                    {% for s in stok %}
+                    <!-- value nya sekarang ID master bahan, bukan ID bahan masuk -->
+                    <option value="{{ s.bahan_baku_id }}">
+                        {{ s.bahan_baku__nama_bahan }} | sisa {{ s.total_pcs }} pcs | sisa {{ s.total_m3|floatformat:3}} m3
+                    </option>
+                    {% endfor %}
+                </select><br>
+
+                <input type="number" name="pcs" placeholder="PCS"><br>
+                <input type="number" step="0.01" name="m3" placeholder="M3"><br>
+
+                <button>Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="editModal" style="display:none">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">X</span>
+            <form method="post" id="editForm">
+                <h3>Edit Proses Produksi</h3>
+                {% csrf_token %}
+                <input type="number" name="pcs" placeholder="Jumlah Pcs">
+                <input type="number" step="0.01" name="m3" placeholder="Jumlah M3">
+                <button>Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteModal" style="display:none">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">X</span>
+
+        </div>
+        <form method="post" id="deleteForm">
+            {% csrf_token %}
+            <button>Hapus</button>
+        </form>
+    </div>
+    </div>
+
+
+
+</body>
+<script>
+    function openAdd() {
+        addModal.style.display = 'block'
+    }
+
+    function openEdit(id) {
+        editModal.style.display = 'block'
+        editForm.action = '/pemakaian/edit/' + id + '/'
+    }
+    function openDelete(id) {
+        deleteModal.style.display = 'block'
+        deleteForm.action = '/pemakaian/delete/' + id + '/'
+    }
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+    function exportExcel() {
+        // Clone tabel agar tidak mengganggu tampilan asli
+        let originalTable = document.querySelector("table");
+        let table = originalTable.cloneNode(true);
+
+        // Hapus kolom terakhir (Aksi) di setiap baris
+        for (let row of table.rows) {
+            row.deleteCell(row.cells.length - 1);
+        }
+
+        let wb = XLSX.utils.book_new();
+        let ws = XLSX.utils.table_to_sheet(table);
+
+        XLSX.utils.book_append_sheet(wb, ws, "Pemakaian Bahan");
+        XLSX.writeFile(wb, "pemakaian_bahan.xlsx");
+    }
+</script>
+
+</html>

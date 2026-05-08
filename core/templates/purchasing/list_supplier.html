@@ -1,0 +1,148 @@
+{%load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Data Supplier</title>
+  <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
+</head>
+
+<body>
+  {% include 'parts/sidebar_purchasing.html' %}
+  <div class="content">
+    <h2>Data Supplier</h2>
+    <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
+
+    <br><br>
+
+    <table>
+      <tr>
+        <th>No</th>
+        <th>Nama</th>
+        <th>Alamat</th>
+        <th>Kontak</th>
+        <th>Aksi</th>
+      </tr>
+
+      {% for s in data %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ s.nama_supplier }}</td>
+        <td>{{ s.alamat }}</td>
+        <td>{{ s.kontak }}</td>
+        <td>
+          <button class="btn-action btn-edit"
+            onclick="openEditModal('{{ s.id }}','{{ s.nama_supplier }}','{{ s.alamat }}','{{ s.kontak }}')">Edit</button>
+          <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="modal" id="addModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('addModal')">&times;</span>
+      <h3>Tambah Supplier Baru</h3>
+
+      <form method="post" action="/supplier/add/">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label>Nama Supplier</label>
+          <input type="text" name="nama_supplier" placeholder="Masukkan nama PT atau perorangan..." required>
+        </div>
+
+        <div class="form-group">
+          <label>Kontak / No. Telepon</label>
+          <input type="text" name="kontak" placeholder="Contoh: 0812xxxx">
+        </div>
+
+        <div class="form-group">
+          <label>Alamat Lengkap</label>
+          <textarea name="alamat" placeholder="Masukkan alamat lengkap supplier..." rows="3"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+          <button type="submit" class="btn-action btn-ya">Simpan Supplier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('editModal')">&times;</span>
+      <h3>Edit Data Supplier</h3>
+
+      <form method="post" id="editForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label>Nama Supplier</label>
+          <input type="text" name="nama_supplier" id="editNama" required>
+        </div>
+
+        <div class="form-group">
+          <label>Kontak / No. Telepon</label>
+          <input type="text" name="kontak" id="editKontak">
+        </div>
+
+        <div class="form-group">
+          <label>Alamat Lengkap</label>
+          <textarea name="alamat" id="editAlamat" rows="3"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+          <button type="submit" class="btn-action btn-ya">Update Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="deleteModal">
+    <div class="modal-content text-center">
+      <div class="mb-4 text-red-500">
+      </div>
+      <h3 class="border-none pb-0">Hapus Supplier?</h3>
+      <p class="text-sm text-gray-500 mb-6">Menghapus supplier dapat berdampak pada data riwayat bahan baku yang
+        terkait.</p>
+
+      <form method="post" id="deleteForm">
+        {% csrf_token %}
+        <div class="modal-actions justify-center">
+          <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+          <button type="submit" class="btn-action btn-ya ">Ya, Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</body>
+
+<script>
+  function openAddModal() {
+    document.getElementById('addModal').style.display = 'block';
+  }
+
+  function openEditModal(id, nama, alamat, kontak) {
+    document.getElementById('editModal').style.display = 'block';
+    document.getElementById('editNama').value = nama;
+    document.getElementById('editAlamat').value = alamat;
+    document.getElementById('editKontak').value = kontak;
+    document.getElementById('editForm').action = '/supplier/edit/' + id + '/';
+  }
+
+  function openDeleteModal(id) {
+    document.getElementById('deleteModal').style.display = 'block';
+    document.getElementById('deleteForm').action = '/supplier/delete/' + id + '/';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+</script>
+
+</html>

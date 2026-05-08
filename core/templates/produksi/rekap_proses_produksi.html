@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Rekap Proses Produksi</title>
+
+    <!-- SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
+</head>
+
+<body>
+    {% include 'parts/sidebar_produksi.html' %}
+    <div class="content">
+        <h2>Rekap Proses Produksi</h2>
+
+        <!-- ================= FILTER ================= -->
+        <div class="actions">
+            <form method="get">
+                Dari :
+                <input type="date" name="start" value="{{ request.GET.start }}">
+
+                Sampai :
+                <input type="date" name="end" value="{{ request.GET.end }}">
+
+                <button type="submit">Filter</button>
+
+                <a href="{% url 'rekap_pemakaian_bahan' %}">
+                    <button type="button">Reset</button>
+                </a>
+
+                <button type="button" onclick="exportExcel()">Export Excel</button>
+            </form>
+        </div>
+
+        <!-- ================= TABLE ================= -->
+        <table id="rekapTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal Produksi</th>
+                    <th>Supplier</th>
+                    <th>Nama Bahan Baku</th>
+                    <th>Jumlah PCS</th>
+                    <th>Jumlah M3</th>
+                    <th>Jumlah Transaksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for d in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ d.proses_produksi.tanggal_produksi|date:"d F Y" }}</td>
+                    <td>{{ d.bahan_baku_masuk.supplier }}</td>
+                    <td>{{ d.bahan_baku_masuk.bahan_baku }}</td>
+                    <td>{{ d.jumlah_pcs }}</td>
+                    <td>{{ d.jumlah_m3 }}</td>
+                    <td>1</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Data tidak ditemukan</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4">TOTAL</td>
+                    <td>{{ total_pcs }}</td>
+                    <td>{{ total_m3 }}</td>
+                    <td>{{ total_transaksi }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <!-- ================= EXPORT ================= -->
+    <script>
+        function exportExcel() {
+            const table = document.getElementById("rekapTable");
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Pemakaian");
+
+            const today = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `rekap_pemakaian_bahan_${today}.xlsx`);
+        }
+    </script>
+
+</body>
+
+</html>

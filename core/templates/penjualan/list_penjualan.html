@@ -1,0 +1,201 @@
+{% load rupiah %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penjualan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/penjualan.css' %}">
+</head>
+
+<body>
+    {% include 'parts/sidebar_penjualan.html' %}
+    <div class="content">
+        <h2>Data Penjualan</h2>
+
+        <button onclick="openAddModal()">
+            + Tambah Penjualan
+        </button>
+
+       <table class="table table-bordered table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th width="5%">No</th>
+            <th>Tanggal</th>
+            <th>Produk</th>
+            <th>Pembeli</th>
+            <th>PCS</th>
+            <th>M3</th>
+            <th>Total Harga</th>
+            <th width="15%">Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in data %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ d.tanggal_penjualan }}</td>
+            <td>{{ d.hasil_produksi.nama_hasil_produksi }}</td>
+            <td>{{ d.pembeli }}</td>
+            <td>{{ d.pcs }}</td>
+            <td>{{ d.m3|floatformat:3 }}</td>
+            <td>{{ d.total_harga|rupiah }}</td>
+            <td>
+                <!-- Tombol Edit -->
+                <button 
+                    type="button"
+                    class="btn btn-warning btn-sm" 
+                    onclick="openEditModal('{{ d.id }}', '{{ d.pcs }}', '{{ d.m3 }}', '{{ d.total_harga }}')"
+                >
+                    <i class="fa fa-edit"></i> Edit
+                </button>
+
+                <!-- Tombol Hapus -->
+                <button 
+                    type="button"
+                    class="btn btn-danger btn-sm" 
+                    onclick="openDeleteModal('{{ d.id }}')"
+                >
+                    <i class="fa fa-trash"></i> Hapus
+                </button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">Data tidak ditemukan.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">X</span>
+            <form method="post" action="{% url 'penjualan_add' %}">
+                {% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>Tambah Penjualan</h5>
+                    </div>
+                    <label for="">Tanggal</label>
+                    <input type="date" name="tanggal_penjualan" class="form-control" required>
+
+                    <label>Hasil Produksi</label>
+                    <select name="hasil_produksi" class="form-control">
+                        {% for h in hasil %}
+                        <option value="{{ h.id }}">
+                            {{ h.nama_hasil_produksi }} | Sisa PCS: {{ h.sisa_pcs }} | Sisa M3: {{ h.sisa_m3 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+                    <label class="mt-2">Pembeli</label>
+                    <select name="pembeli" class="form-control">
+                        {% for p in pembeli %}
+                        <option value="{{ p.id }}">{{ p }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="number" name="pcs" class="form-control mt-2" placeholder="PCS" required>
+                    <input type="number" step="0.0001" name="m3" class="form-control mt-2" placeholder="M3" required>
+                    <input type="text" id="total_harga_display" class="form-control mt-2" placeholder="Rp. 0" required>
+                    <input type="hidden" name="total_harga" id="total_harga">
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success">Simpan</button>
+                </div>
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">X</span>
+
+            <form method="post" id="editForm">
+                {% csrf_token %}
+                <h4>Edit Penjualan</h4>
+
+                <input type="number" name="pcs" id="editPcs" required>
+                <input type="number" step="0.0001" name="m3" id="editM3" required>
+                <input type="number" name="total_harga" id="editTotal">
+
+                <button type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('deleteModal')">X</span>
+
+            <form method="post" id="deleteForm">
+                {% csrf_token %}
+                <p>Yakin hapus data ini?</p>
+                <button type="submit">Hapus</button>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+<script>
+    function openAddModal(id) {
+        document.getElementById('addModal').style.display = 'block';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    /* EDIT */
+    function openEditModal(id, pcs, m3, total) {
+        document.getElementById('editModal').style.display = 'block';
+        document.getElementById('editPcs').value = pcs;
+        document.getElementById('editM3').value = m3;
+        document.getElementById('editTotal').value = total;
+
+        document.getElementById('editForm').action = `/penjualan/edit/${id}/`;
+        openModal('editModal');
+    }
+
+    /* DELETE */
+    function openDeleteModal(id) {
+        document.getElementById('deleteModal').style.display = 'block';
+        document.getElementById('deleteForm').action = `/penjualan/delete/${id}/`;
+        openModal('deleteModal');
+    }
+</script>
+<script>
+    const display = document.getElementById('total_harga_display');
+    const hidden = document.getElementById('total_harga');
+
+    display.addEventListener('input', function () {
+        let value = this.value.replace(/[^0-9]/g, '');
+
+        hidden.value = value; // kirim ke backend
+
+        this.value = formatRupiah(value);
+    });
+
+    function formatRupiah(angka) {
+        let number_string = angka.toString();
+        let sisa = number_string.length % 3;
+        let rupiah = number_string.substr(0, sisa);
+        let ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        return angka ? 'Rp. ' + rupiah : '';
+    }
+</script>
+</html>

@@ -1,0 +1,116 @@
+{%load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Data Bahan Baku</title>
+    <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
+</head>
+
+<body>
+    {% include 'parts/sidebar_purchasing.html' %}
+    <div class="content">
+        <h2>Data Bahan Baku</h2>
+        <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
+
+        <br><br>
+
+        <table>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Aksi</th>
+            </tr>
+
+            {% for s in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ s.nama_bahan}}</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="openEditModal('{{ s.id }}','{{ s.nama_bahan }}')">Edit</button>
+                    <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+<div class="modal" id="addModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h3>Tambah Bahan Baku</h3>
+
+            <form method="post" action="/bahanbaku/add/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Nama Bahan Baku</label>
+                    <input type="text" name="nama_bahan" placeholder="Masukkan nama bahan..." required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h3>Edit Bahan Baku</h3>
+
+            <form method="post" id="editForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Nama Bahan Baku</label>
+                    <input type="text" name="nama_bahan" id="editNama" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-content text-center">
+            <div class="mb-4 text-red-500">
+            </div>
+            <h3 class="border-none pb-0">Hapus Data?</h3>
+            <p class="text-sm text-gray-500 mb-6">Data bahan baku yang dihapus tidak dapat dikembalikan.</p>
+
+            <form method="post" id="deleteForm">
+                {% csrf_token %}
+                <div class="modal-actions justify-center">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya ">Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+   
+</body>
+ <script>
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'block';
+        }
+
+        function openEditModal(id, nama, alamat, kontak) {
+            document.getElementById('editModal').style.display = 'block';
+            document.getElementById('editNama').value = nama;
+            document.getElementById('editForm').action = '/bahanbaku/edit/' + id + '/';
+        }
+
+        function openDeleteModal(id) {
+            document.getElementById('deleteModal').style.display = 'block';
+            document.getElementById('deleteForm').action = '/bahanbaku/delete/' + id + '/';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+    </script>
+
+</html>
