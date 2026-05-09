@@ -6,75 +6,78 @@
 <head>
     <meta charset="UTF-8">
     <title>Rekap Bulanan Penjualan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/penjualan.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_penjualan.html' %}
-    <div class="content">
-        <h2>Rekap Bulanan Penjualan</h2>
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
+        <div class="content">
+            <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Rekap Bulanan Penjualan</h2>
+            <div class="filter-container">
+                <form method="get" class="filter-form">
+                    Dari :
+                    <input type="date" name="start" value="{{ start }}">
+                    Sampai :
+                    <input type="date" name="end" value="{{ end }}">
 
-        <form method="get">
-            Dari :
-            <input type="date" name="start" value="{{ start }}">
-            Sampai :
-            <input type="date" name="end" value="{{ end }}">
+                    <button type="submit" class="btn-filter">Filter</button>
+                    <a href="{% url 'rekap_penjualan' %}" class="btn-reset">Reset</a>
+                    <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
+                </form>
+            </div>
+            <br>
 
-            <button type="submit">Filter</button>
-            <a href="{% url 'rekap_penjualan' %}">Reset</a>
-            <button type="button" onclick="exportExcel()">Export Excel</button>
-        </form>
+            <table border="1" id="rekapTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Penjualan</th>
+                        <th>Pembeli</th>
+                        <th>Produk</th>
+                        <th>PCS</th>
+                        <th>M³</th>
+                        <th>Total Harga (Rp)</th>
+                    </tr>
+                </thead>
 
-        <br>
+                <tbody>
+                    {% for d in data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ d.tanggal_penjualan|date:"d F Y"}}</td>
+                        <td>{{ d.pembeli }}</td>
+                        <td>{{ d.hasil_produksi.nama_hasil_produksi }}</td>
+                        <td>{{ d.pcs }}</td>
+                        <td>{{ d.m3 | floatformat:3 }}</td>
+                        <td>{{ d.total_harga | rupiah }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" align="center">Data tidak ada</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
 
-        <table border="1" id="rekapTable">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Tanggal Penjualan</th>
-                    <th>Pembeli</th>
-                    <th>Produk</th>
-                    <th>PCS</th>
-                    <th>M3</th>
-                    <th>Total Harga (Rp)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for d in data %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ d.tanggal_penjualan|date:"d F Y"}}</td>
-                    <td>{{ d.pembeli }}</td>
-                    <td>{{ d.hasil_produksi.nama_hasil_produksi }}</td>
-                    <td>{{ d.pcs }}</td>
-                    <td>{{ d.m3 | floatformat:3 }}</td>
-                    <td>{{ d.total_harga | rupiah }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" align="center">Data tidak ada</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-            <tfoot>
-                <tr>
-                    <th colspan="4">TOTAL</th>
-                    <th>{{ total_pcs }}</th>
-                    <th>{{ total_m3|floatformat:4 }}</th>
-                    <th>{{ total_penjualan |rupiah }}</th>
-                </tr>
-                <tr>
-                    <th colspan="4">JUMLAH TRANSAKSI</th>
-                    <th colspan="3">{{ total_transaksi }}</th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+                <tfoot>
+                    <tr>
+                        <th colspan="4">TOTAL</th>
+                        <th>{{ total_pcs }}</th>
+                        <th>{{ total_m3|floatformat:3 }}</th>
+                        <th>{{ total_penjualan |rupiah }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="4">JUMLAH TRANSAKSI</th>
+                        <th colspan="3">{{ total_transaksi }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </main>
     <script>
         function exportExcel() {
             const table = document.getElementById("rekapTable");

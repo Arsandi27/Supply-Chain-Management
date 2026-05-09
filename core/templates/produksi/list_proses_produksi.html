@@ -14,8 +14,9 @@
     {% include 'parts/sidebar_produksi.html' %}
     <div class="content">
         <h2>Proses Produksi</h2>
-        <button onclick="openAdd()">+ Tambah</button>
-        <form method="get" style="margin-bottom:15px">
+        <div class="filter-container">
+            <button class="btn-action btn-tambah" onclick="openAdd()">+ Tambah</button>
+            <form method="get" class="filter-form">
             <input type="text" name="bahan" placeholder="Cari Nama Bahan" value="{{ nama_bahan|default:'' }}">
 
             <label>Dari Tanggal:</label>
@@ -24,15 +25,16 @@
             <label>Sampai Tanggal:</label>
             <input type="date" name="tanggal_selesai" value="{{ tanggal_selesai|default:'' }}">
 
-            <button type="submit">Filter</button>
+            <button type="submit" class="btn-filter">Filter</button>
             <a href="{% url 'pemakaian_bahan_list' %}">
-                <button type="button">Reset</button>
+                <button type="button" class="btn-reset">Reset</button>
             </a>
 
-            <button type="button" onclick="exportExcel()">
+            <button type="button" class="btn-export" onclick="exportExcel()">
                 Export Excel
             </button>
         </form>
+        </div>
         <table border="1">
             <tr>
                 <th>No</th>
@@ -50,65 +52,114 @@
                 <td>{{ d.bahan_baku_masuk }}</td>
                 <td>{{ d.jumlah_pcs }}</td>
                 <td>{{ d.jumlah_m3 }}</td>
-                <td><button onclick="openEdit('{{ d.id }}')">Edit</button>
-                    <button onclick="openDelete('{{ d.id }}')">Hapus</button>
+                <td><button class="btn-action btn-edit" onclick="openEdit('{{ d.id }}')">Edit</button>
+                    <button class="btn-action btn-hapus" onclick="openDelete('{{ d.id }}')">Hapus</button>
                 </td>
             </tr>
             {% endfor %}
         </table>
     </div>
-    <div class="modal" id="addModal" style="display:none">
+<!-- ================= MODAL TAMBAH PEMAKAIAN BAHAN ================= -->
+    <div class="modal" id="addModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h3>Tambah Pemakaian Bahan</h3>
+
             <form method="post" action="{% url 'pemakaian_bahan_add' %}">
                 {% csrf_token %}
 
-                <select name="proses">
-                    {% for p in produksi %}
-                    <option value="{{ p.id }}">{{ p }}</option>
-                    {% endfor %}
-                </select><br>
+                <div class="form-group">
+                    <label>Pilih Proses Produksi</label>
+                    <select name="proses" required>
+                        <option value="" disabled selected>-- Pilih Proses --</option>
+                        {% for p in produksi %}
+                        <option value="{{ p.id }}">{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <select name="bahan_master_id">
-                    {% for s in stok %}
-                    <!-- value nya sekarang ID master bahan, bukan ID bahan masuk -->
-                    <option value="{{ s.bahan_baku_id }}">
-                        {{ s.bahan_baku__nama_bahan }} | sisa {{ s.total_pcs }} pcs | sisa {{ s.total_m3|floatformat:3}} m3
-                    </option>
-                    {% endfor %}
-                </select><br>
+                <div class="form-group">
+                    <label>Pilih Bahan Baku (Sisa Stok)</label>
+                    <select name="bahan_master_id" required>
+                        <option value="" disabled selected>-- Pilih Bahan --</option>
+                        {% for s in stok %}
+                        <option value="{{ s.bahan_baku_id }}">
+                            {{ s.bahan_baku__nama_bahan }} | Sisa: {{ s.total_pcs }} PCS | Sisa: {{ s.total_m3|floatformat:3 }} M³
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <input type="number" name="pcs" placeholder="PCS"><br>
-                <input type="number" step="0.01" name="m3" placeholder="M3"><br>
+                <div class="form-group">
+                    <div class="grid-2-kolom">
+                        <div>
+                            <label>Jumlah Digunakan (PCS)</label>
+                            <input type="number" name="pcs" placeholder="0" required>
+                        </div>
+                        <div>
+                            <label>Volume Digunakan (M3)</label>
+                            <input type="number" step="0.01" name="m3" placeholder="0.00" required>
+                        </div>
+                    </div>
+                </div>
 
-                <button>Simpan</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan Pemakaian</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <div class="modal" id="editModal" style="display:none">
+    <!-- ================= MODAL EDIT PEMAKAIAN BAHAN ================= -->
+    <div class="modal" id="editModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">X</span>
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h3>Edit Pemakaian Bahan</h3>
+
             <form method="post" id="editForm">
-                <h3>Edit Proses Produksi</h3>
                 {% csrf_token %}
-                <input type="number" name="pcs" placeholder="Jumlah Pcs">
-                <input type="number" step="0.01" name="m3" placeholder="Jumlah M3">
-                <button>Update</button>
+                
+                <div class="form-group">
+                    <div class="grid-2-kolom">
+                        <div>
+                            <label>Jumlah PCS</label>
+                            <input type="number" name="pcs" placeholder="Jumlah Pcs" required>
+                        </div>
+                        <div>
+                            <label>Volume M3</label>
+                            <input type="number" step="0.01" name="m3" placeholder="Jumlah M3" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Data</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <div class="modal" id="deleteModal" style="display:none">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
+    <!-- ================= MODAL HAPUS ================= -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content text-center">
+            <div class="mb-4 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <h3 class="border-none pb-0">Hapus Data Pemakaian?</h3>
+            <p class="text-sm text-gray-500 mb-6">Yakin hapus data ini? Stok bahan baku akan dikembalikan secara otomatis.</p>
 
+            <form method="post" id="deleteForm">
+                {% csrf_token %}
+                <div class="modal-actions justify-center">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Ya, Hapus</button>
+                </div>
+            </form>
         </div>
-        <form method="post" id="deleteForm">
-            {% csrf_token %}
-            <button>Hapus</button>
-        </form>
-    </div>
     </div>
 
 

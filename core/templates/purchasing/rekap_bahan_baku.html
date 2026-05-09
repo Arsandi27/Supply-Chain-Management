@@ -1,89 +1,94 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Rekap Bahan Baku Masuk</title>
-    
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
     <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 </head>
-<body>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_purchasing.html' %}
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
     <div class="content">
-<h2>Rekap Bahan Baku Masuk</h2>
-<div class="filter-container">
-    <form method="get" class="filter-form" style="margin-bottom: 20px ;">
-       Dari Tanggal :
-        <input type="date" name="start" value="{{ request.GET.start }}">
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Rekap Bahan Baku Masuk</h2>
+        <div class="filter-container">
+            <form method="get" class="filter-form" style="margin-bottom: 20px ;">
+                Dari Tanggal :
+                <input type="date" name="start" value="{{ request.GET.start }}">
 
-        Sampai Tanggal :
-        <input type="date" name="end" value="{{ request.GET.end }}">
-        
-        <button type="submit" class="btn-filter">Filter</button>
-        <a href="{% url 'rekap_bahan_baku' %}" class="btn-reset">Reset</a>
-        <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
-    </form>
-</div>
+                Sampai Tanggal :
+                <input type="date" name="end" value="{{ request.GET.end }}">
 
-<!-- ================= TABLE ================= -->
-<table id="rekapTable">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Tanggal</th>
-            <th>Nama Supplier</th>
-            <th>Nama Bahan Baku</th>
-            <th>Jumlah PCS</th>
-            <th>Jumlah M3</th>
-            <th>Jumlah Transaksi</th>
-        </tr>
-    </thead>
+                <button type="submit" class="btn-filter">Filter</button>
+                <a href="{% url 'rekap_bahan_baku' %}" class="btn-reset">Reset</a>
+                <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
+            </form>
+        </div>
 
-    <tbody>
-        {% for d in data %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ d.tanggal_masuk |date:"d F Y"  }}</td>
-            <td>{{ d.supplier }}</td>
-            <td>{{ d.bahan_baku }}</td>
-            <td>{{ d.jumlah_pcs }}</td>
-            <td>{{ d.jumlah_m3 | floatformat:3 }}</td>
-            <td>1</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">Data tidak ditemukan</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+        <!-- ================= TABLE ================= -->
+        <table id="rekapTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama Supplier</th>
+                    <th>Nama Bahan Baku</th>
+                    <th>Jumlah PCS</th>
+                    <th>Jumlah M³</th>
+                    <th>Jumlah Transaksi</th>
+                </tr>
+            </thead>
 
-    <!-- ================= TOTAL ================= -->
-    <tfoot>
-        <tr class="total-row">
-            <td colspan="4">TOTAL</td>
-            <td>{{ total_pcs }}</td>
-            <td>{{ total_m3 }}</td>
-            <td>{{ total_transaksi }}</td>
-        </tr>
-    </tfoot>
-</table>
-</div>
-<!-- ================= EXPORT EXCEL ================= -->
-<script>
-function exportExcel() {
-    const table = document.getElementById("rekapTable");
+            <tbody>
+                {% for d in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ d.tanggal_masuk |date:"d F Y" }}</td>
+                    <td>{{ d.supplier }}</td>
+                    <td>{{ d.bahan_baku }}</td>
+                    <td>{{ d.jumlah_pcs }}</td>
+                    <td>{{ d.jumlah_m3 | floatformat:3 }}</td>
+                    <td>1</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Data tidak ditemukan</td>
+                </tr>
+                {% endfor %}
+            </tbody>
 
-    const ws = XLSX.utils.table_to_sheet(table);
-    const wb = XLSX.utils.book_new();
+            <!-- ================= TOTAL ================= -->
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4">TOTAL</td>
+                    <td>{{ total_pcs }}</td>
+                    <td>{{ total_m3 }}</td>
+                    <td>{{ total_transaksi }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    </main>
+    <!-- ================= EXPORT EXCEL ================= -->
+    <script>
+        function exportExcel() {
+            const table = document.getElementById("rekapTable");
 
-    XLSX.utils.book_append_sheet(wb, ws, "Rekap Bahan Baku");
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
 
-    const today = new Date().toISOString().slice(0,10);
-    XLSX.writeFile(wb, `rekap_bahan_baku_${today}.xlsx`);
-}
-</script>
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Bahan Baku");
+
+            const today = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `rekap_bahan_baku_${today}.xlsx`);
+        }
+    </script>
 
 </body>
+
 </html>

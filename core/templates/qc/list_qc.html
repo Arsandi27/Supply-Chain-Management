@@ -21,7 +21,7 @@
                     <th>Tanggal Produksi</th>
                     <th>Produk</th>
                     <th>PCS</th>
-                    <th>M3</th>
+                    <th>M³</th>
                     <th>Grade</th>
                     <th>Tanggal Validasi</th>
                     <th>Catatan</th>
@@ -81,13 +81,13 @@
                     <td>
 
                         {% if not d.qc %}
-                        <button onclick="openValidasi('{{ d.id }}')">
+                        <button class="btn-action btn-tambah" onclick="openValidasi('{{ d.id }}')">
                             Validasi
                         </button>
 
                         {% else %}
 
-                        <button onclick="openEdit(
+                        <button class="btn-action btn-edit" onclick="openEdit(
                             '{{ d.qc.id }}',
                             '{{ d.qc.quality.id }}',
                             '{{ d.qc.status }}',
@@ -118,80 +118,68 @@
 
     </div>
 </main>
-    <!-- MODAL VALIDASI -->
-<div class="modal" id="modalValidasi">
+ <div class="modal" id="modalValidasi">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('modalValidasi')">&times;</span>
+            <h3>Validasi Quality Control</h3>
 
-    <div class="modal-content">
+            <form method="post" id="formValidasi">
+                {% csrf_token %}
 
-        <h3>Validasi QC</h3>
+                <div class="form-group">
+                    <label>Pilih Quality / Grade</label>
+                    <select name="quality" id="valQuality" required>
+                        <option value="" disabled selected>-- Pilih hasil grade --</option>
+                        {% for q in quality_list %}
+                        <option value="{{ q.id }}">{{ q.quality }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <form method="post" id="formValidasi">
-            {% csrf_token %}
+                <div class="form-group">
+                    <label>Catatan Pemeriksaan</label>
+                    <textarea name="catatan" rows="4" placeholder="Berikan alasan atau catatan detail mengenai kualitas produk..."></textarea>
+                </div>
 
-            Quality / Grade :
-
-            <select name="quality" id="valQuality" required>
-
-                <option value="">-- pilih grade --</option>
-
-                {% for q in quality_list %}
-                    <option value="{{ q.id }}">
-                        {{ q.quality }}
-                    </option>
-                    {% endfor %}
-
-            </select>
-
-            <br><br>
-
-            Catatan :
-            <textarea name="catatan"></textarea>
-
-            <br><br>
-
-            <button type="submit">Simpan</button>
-
-            <button type="button" onclick="closeModal()">
-                Batal
-            </button>
-
-        </form>
-
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('modalValidasi')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan Validasi</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-</div>
-    <!-- MODAL EDIT VALIDASI -->
     <div class="modal" id="modalEdit">
-
         <div class="modal-content">
-
-            <h3>Edit Validasi QC</h3>
+            <span class="close" onclick="closeModal('modalEdit')">&times;</span>
+            <h3>Edit Hasil Validasi</h3>
 
             <form method="post" id="formEdit">
                 {% csrf_token %}
 
-                Grade / Quality :
-                <select name="quality" id="editQuality" required>
-                    {% for q in quality_list %}
-                    <option value="{{ q.id }}">
-                        {{ q.quality }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <br><br>
+                <div class="form-group">
+                    <label>Grade / Quality</label>
+                    <select name="quality" id="editQuality" required>
+                        {% for q in quality_list %}
+                        <option value="{{ q.id }}">{{ q.quality }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                Catatan :
-                <textarea name="catatan" id="editCatatan"></textarea>
-                <br><br>
+                <div class="form-group">
+                    <label>Catatan Pemeriksaan</label>
+                    <textarea name="catatan" id="editCatatan" rows="4"></textarea>
+                </div>
 
-                <button type="submit">Update</button>
-                <button type="button" onclick="closeModal()">Batal</button>
-
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('modalEdit')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Validasi</button>
+                </div>
             </form>
-
         </div>
     </div>
 
+</body>
 
     <script>
 
@@ -216,9 +204,11 @@
         function closeModal() {
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none')
         }
-
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
     </script>
-
-</body>
 
 </html>

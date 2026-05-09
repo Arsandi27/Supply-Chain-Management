@@ -1,63 +1,125 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stok Penjualan - SupplyChain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/penjualan.css' %}">
-    <title>Stok Penjualan</title>
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_penjualan.html' %}
-    <div class="content">
-        <h2>Stok Penjualan</h2>
 
-        <div style="display:flex; gap:20px;">
+    <main class="flex-1 flex flex-col h-full overflow-hidden ml-64">
+        <div class="flex-1 overflow-y-auto p-6">
 
-            <div style="padding:20px; background:#e3f2fd;">
-                <h4>Total Stok PCS</h4>
-                <h2>{{ total_pcs }}</h2>
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-[#191970]">Stok Penjualan</h2>
+                    <p class="text-sm text-gray-500 mt-1">Pantau sisa stok hasil produksi yang siap dijual.</p>
+                </div>
             </div>
 
-            <div style="padding:20px; background:#e8f5e9;">
-                <h4>Total Stok M3</h4>
-                <h2>{{ total_m3|floatformat:3 }}</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+                <div
+                    class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TOTAL STOK
+                                KESELURUHAN</p>
+                            <div class="flex items-baseline mt-1">
+                                <h3 class="text-2xl font-bold text-gray-900">{{ total_pcs|default:0 }}</h3>
+                                <span class="ml-1 text-sm font-medium text-gray-500">PCS</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Siap untuk dijual</p>
+                        </div>
+                        <div class="p-2 bg-[#191970]/10 text-[#191970] rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TOTAL VOLUME STOK
+                            </p>
+                            <div class="flex items-baseline mt-1">
+                                <h3 class="text-2xl font-bold text-gray-900">{{ total_m3|default:0|floatformat:3 }}</h3>
+                                <span class="ml-1 text-sm font-medium text-gray-500">M³</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Volume kubikasi produk</p>
+                        </div>
+                        <div class="p-2 bg-[#191970]/10 text-[#191970] rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3h-1.5m-14.25 0h12.75m-12.75 0a1.125 1.125 0 0 1-1.125-1.125M9.75 18.375v-1.5c0-.621.504-1.125 1.125-1.125m4.5 2.625v-1.5c0-.621-.504-1.125-1.125-1.125m-6.375 0h7.5" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">Stok Hasil Produksi (Terbaru)</h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-sm text-gray-500 border-b border-gray-200">
+                                <th class="pb-3">No</th>
+                                <th class="pb-3">Tanggal</th>
+                                <th class="pb-3">Produk</th>
+                                <th class="pb-3">Grade</th>
+                                <th class="pb-3 text-right">Sisa PCS</th>
+                                <th class="pb-3 text-right">Sisa M³</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in stok_terbaru %}
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td >{{ forloop.counter }}</td>
+                                <td >{{ d.tanggal_produksi|date:"d F Y" }}</td>
+                                <td >{{ d.nama_hasil_produksi }}</td>
+                                <td class="py-3 font-bold
+                                    {% if d.qc and d.qc.quality %}
+                                        {% if 'Lulus' in d.qc.quality or 'Grade A' in d.qc.quality %} text-green-600
+                                        {% elif 'Gagal' in d.qc.quality %} text-red-600
+                                        {% else %} text-[#191970] {% endif %}
+                                    {% else %} text-red-500 {% endif %}
+                                ">
+                                    {% if d.qc and d.qc.quality %}
+                                    {{ d.qc.quality }}
+                                    {% else %}
+                                    Belum QC
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">{{ d.sisa_pcs }}</td>
+                                <td class="text-right">{{ d.sisa_m3|floatformat:3 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="py-6 text-center text-gray-500">Belum ada data stok.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
-
-        <h3>Stok Hasil Produksi (Terbaru)</h3>
-
-        <table border="1">
-            <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Produk</th>
-                <th>Grade</th>
-                <th>Sisa PCS</th>
-                <th>Sisa M3</th>
-            </tr>
-            {% for d in stok_terbaru %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ d.tanggal_produksi|date:"d F Y" }}</td>
-                <td>{{ d.nama_hasil_produksi }}</td>
-                <td>
-                    {% if d.qc and d.qc.quality %}
-                    {{ d.qc.quality }}
-                    {% else %}
-                    <span style="color:red;">Belum QC</span>
-                    {% endif %}
-                </td>
-
-                <td>{{ d.sisa_pcs }}</td>
-                <td>{{ d.sisa_m3|floatformat:3 }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
+    </main>
 </body>
 
 </html>

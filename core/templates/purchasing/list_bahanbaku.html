@@ -4,37 +4,42 @@
 
 <head>
     <title>Data Bahan Baku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_purchasing.html' %}
-    <div class="content">
-        <h2>Data Bahan Baku</h2>
-        <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
+        <div class="content">
+            <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Bahan Baku</h2>
+            <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
 
-        <br><br>
+            <br><br>
 
-        <table>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Aksi</th>
-            </tr>
+            <table>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Aksi</th>
+                </tr>
 
-            {% for s in data %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ s.nama_bahan}}</td>
-                <td>
-                    <button class="btn-action btn-edit" onclick="openEditModal('{{ s.id }}','{{ s.nama_bahan }}')">Edit</button>
-                    <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-<div class="modal" id="addModal">
+                {% for s in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ s.nama_bahan}}</td>
+                    <td>
+                        <button class="btn-action btn-edit"
+                            onclick="openEditModal('{{ s.id }}','{{ s.nama_bahan }}')">Edit</button>
+                        <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </main>
+
+    <div class="modal" id="addModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('addModal')">&times;</span>
             <h3>Tambah Bahan Baku</h3>
@@ -84,33 +89,34 @@
             <form method="post" id="deleteForm">
                 {% csrf_token %}
                 <div class="modal-actions justify-center">
-                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="button" class="btn-action btn-tidak"
+                        onclick="closeModal('deleteModal')">Batal</button>
                     <button type="submit" class="btn-action btn-ya ">Ya, Hapus</button>
                 </div>
             </form>
         </div>
     </div>
-   
+
 </body>
- <script>
-        function openAddModal() {
-            document.getElementById('addModal').style.display = 'block';
-        }
+<script>
+    function openAddModal() {
+        document.getElementById('addModal').style.display = 'block';
+    }
 
-        function openEditModal(id, nama, alamat, kontak) {
-            document.getElementById('editModal').style.display = 'block';
-            document.getElementById('editNama').value = nama;
-            document.getElementById('editForm').action = '/bahanbaku/edit/' + id + '/';
-        }
+    function openEditModal(id, nama, alamat, kontak) {
+        document.getElementById('editModal').style.display = 'block';
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editForm').action = '/bahanbaku/edit/' + id + '/';
+    }
 
-        function openDeleteModal(id) {
-            document.getElementById('deleteModal').style.display = 'block';
-            document.getElementById('deleteForm').action = '/bahanbaku/delete/' + id + '/';
-        }
+    function openDeleteModal(id) {
+        document.getElementById('deleteModal').style.display = 'block';
+        document.getElementById('deleteForm').action = '/bahanbaku/delete/' + id + '/';
+    }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-    </script>
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+</script>
 
 </html>

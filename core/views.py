@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, F
+from django.db.models import Q
 
 def login_view(request):
     if request.method == "POST":
@@ -652,66 +653,154 @@ def pemakaian_bahan_list(request):
         'tanggal_selesai': tanggal_selesai,
     })
 
+from decimal import Decimal
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from django.db import transaction
+# Pastikan model PemakaianBahanBaku, BahanBakuMasuk sudah di-import
+
 def pemakaian_bahan_add(request):
     if request.method == 'POST':
         proses_id = int(request.POST['proses'])
-        bahan_id = int(request.POST['bahan'])
-        pcs = int(request.POST['pcs'])
-        m3 = Decimal(request.POST['m3'])
+        # 1. Samain nama dengan yang ada di HTML
+        bahan_master_id = request.POST.get('bahan_master_id') 
+        pcs_dibutuhkan = int(request.POST['pcs'])
+        m3_dibutuhkan = Decimal(request.POST['m3'])
 
-        stok = get_object_or_404(BahanBakuMasuk, id=bahan_id)
+        # Cek kalau bahan gak dipilih
+        if not bahan_master_id:
+            messages.error(request, "Pilih bahan baku terlebih dahulu!")
+            return redirect('pemakaian_bahan_list')
 
-        if stok.sisa_pcs < pcs or stok.sisa_m3 < m3:
-            messages.error(request, "Gagal! Stok tidak mencukupi untuk pemakaian ini.")
-            return redirect('pemakaian_bahan_list') # Balik ke halaman tanpa error crash
+        # 2. Tarik semua stok riwayat barang masuk untuk Master Bahan ini yang masih ada sisanya
+        # Diurutkan dari tanggal masuk paling lama (FIFO)
+        stok_tersedia = BahanBakuMasuk.objects.filter(
+            bahan_baku_id=bahan_master_id,
+            sisa_pcs__gt=0
+        ).order_by('tanggal_masuk')
 
-        # 2️⃣ Transaksi aman
+        # 3. Hitung total keseluruhan dari semua stok
+        total_sisa_pcs = sum(s.sisa_pcs for s in stok_tersedia)
+        total_sisa_m3 = sum(s.sisa_m3 for s in stok_tersedia)
+
+        # Cek apakah stok gabungannya cukup
+        if total_sisa_pcs < pcs_dibutuhkan or total_sisa_m3 < m3_dibutuhkan:
+            messages.error(request, "Gagal! Total stok tidak mencukupi untuk pemakaian ini.")
+            return redirect('pemakaian_bahan_list')
+
+ # 4. Transaksi aman dengan metode potong antrean (FIFO)
         with transaction.atomic():
-            # Kurangi stok
-            stok.sisa_pcs -= pcs
-            stok.sisa_m3 -= m3
-            stok.save()
+            sisa_pcs_kurang = pcs_dibutuhkan
+            sisa_m3_kurang = m3_dibutuhkan
 
-            # Simpan pemakaian
-            PemakaianBahanBaku.objects.create(
-                proses_produksi_id=proses_id,
-                bahan_baku_masuk=stok,
-                jumlah_pcs=pcs,
-                jumlah_m3=m3
-            )
+            for stok in stok_tersedia:
+                if sisa_pcs_kurang <= 0:
+                    break
 
-    return redirect('pemakaian_bahan_list')
+                # Tentukan berapa PCS yang ditarik dari batch ini
+                potong_pcs = min(stok.sisa_pcs, sisa_pcs_kurang)
+                
+                # HITUNG M3 PROPORSIONAL: (pcs ditarik / total pcs) * total m3
+                proporsi = Decimal(potong_pcs) / Decimal(pcs_dibutuhkan)
+                potong_m3 = round(m3_dibutuhkan * proporsi, 4)
 
+                # Pastikan sisa M3 masuk semua di tarikan terakhir biar nggak ada sisa koma
+                if sisa_pcs_kurang - potong_pcs <= 0:
+                    potong_m3 = sisa_m3_kurang
 
+                # Kurangi stok riwayatnya
+                stok.sisa_pcs -= potong_pcs
+                stok.sisa_m3 -= potong_m3
+                stok.save()
+
+                # Kurangi target pemakaian
+                sisa_pcs_kurang -= potong_pcs
+                sisa_m3_kurang -= potong_m3
+
+                # Simpan riwayat pemakaian
+                if potong_pcs > 0 or potong_m3 > 0:
+                    PemakaianBahanBaku.objects.create(
+                        proses_produksi_id=proses_id,
+                        bahan_baku_masuk=stok, 
+                        jumlah_pcs=potong_pcs,
+                        jumlah_m3=potong_m3
+                    )
+
+        messages.success(request, "Pemakaian bahan baku berhasil dicatat!")
+        return redirect('pemakaian_bahan_list')
 def pemakaian_bahan_edit(request, id):
-    pemakaian = get_object_or_404(PemakaianBahanBaku, id=id)
-    stok = pemakaian.bahan_baku_masuk
+    # 1. Ambil salah satu data pemakaian sebagai patokan
+    pemakaian_awal = get_object_or_404(PemakaianBahanBaku, id=id)
+    proses_id = pemakaian_awal.proses_produksi_id
+    bahan_master_id = pemakaian_awal.bahan_baku_masuk.bahan_baku_id
 
     if request.method == 'POST':
-        # 1️⃣ Kembalikan stok lama
-        stok.sisa_pcs += pemakaian.jumlah_pcs
-        stok.sisa_m3 += pemakaian.jumlah_m3
-
         pcs_baru = int(request.POST['pcs'])
         m3_baru = Decimal(request.POST['m3'])
 
-        # 2️⃣ Validasi stok
-        if stok.sisa_pcs < pcs_baru or stok.sisa_m3 < m3_baru:
-            raise ValueError("Stok tidak mencukupi")
+        # Gunakan transaction agar kalau stok gak cukup, semua refund dibatalkan (rollback)
+        with transaction.atomic():
+            
+            # 2. Cari SEMUA pecahan pemakaian lama untuk proses & bahan ini
+            semua_pemakaian_lama = PemakaianBahanBaku.objects.filter(
+                proses_produksi_id=proses_id,
+                bahan_baku_masuk__bahan_baku_id=bahan_master_id
+            )
 
-        # 3️⃣ Kurangi stok baru
-        stok.sisa_pcs -= pcs_baru
-        stok.sisa_m3 -= m3_baru
-        stok.save()
+            # 3. REFUND: Kembalikan semua stok lama ke masing-masing batch-nya
+            for p in semua_pemakaian_lama:
+                p.bahan_baku_masuk.sisa_pcs += p.jumlah_pcs
+                p.bahan_baku_masuk.sisa_m3 += p.jumlah_m3
+                p.bahan_baku_masuk.save()
 
-        # 4️⃣ Update pemakaian
-        pemakaian.jumlah_pcs = pcs_baru
-        pemakaian.jumlah_m3 = m3_baru
-        pemakaian.save()
+            # Hapus log pemakaian lama (karena bakal diganti sama yang baru)
+            semua_pemakaian_lama.delete()
 
-    return redirect('pemakaian_bahan_list')
+            # 4. CEK STOK KESELURUHAN (Master)
+            stok_tersedia = BahanBakuMasuk.objects.filter(
+                bahan_baku_id=bahan_master_id,
+                sisa_pcs__gt=0
+            ).order_by('tanggal_masuk')
 
+            total_sisa_pcs = sum(s.sisa_pcs for s in stok_tersedia)
+            total_sisa_m3 = sum(s.sisa_m3 for s in stok_tersedia)
 
+            # 5. VALIDASI STOK BARU
+            if total_sisa_pcs < pcs_baru or total_sisa_m3 < m3_baru:
+                # Sengaja pakai raise ValueError biar error kuningnya muncul (atau lu bisa ganti jadi messages.error)
+                raise ValueError("Stok keseluruhan tidak mencukupi untuk nominal edit yang baru!")
+
+            # 6. POTONG ULANG STOK (Logika proporsional FIFO yang sama kayak di fungsi Add)
+            sisa_pcs_kurang = pcs_baru
+            sisa_m3_kurang = m3_baru
+
+            for stok in stok_tersedia:
+                if sisa_pcs_kurang <= 0:
+                    break
+
+                potong_pcs = min(stok.sisa_pcs, sisa_pcs_kurang)
+                proporsi = Decimal(potong_pcs) / Decimal(pcs_baru)
+                potong_m3 = round(m3_baru * proporsi, 4)
+
+                if sisa_pcs_kurang - potong_pcs <= 0:
+                    potong_m3 = sisa_m3_kurang
+
+                stok.sisa_pcs -= potong_pcs
+                stok.sisa_m3 -= potong_m3
+                stok.save()
+
+                sisa_pcs_kurang -= potong_pcs
+                sisa_m3_kurang -= potong_m3
+
+                if potong_pcs > 0 or potong_m3 > 0:
+                    PemakaianBahanBaku.objects.create(
+                        proses_produksi_id=proses_id,
+                        bahan_baku_masuk=stok,
+                        jumlah_pcs=potong_pcs,
+                        jumlah_m3=potong_m3
+                    )
+
+        return redirect('pemakaian_bahan_list')
 
 def pemakaian_bahan_delete(request, id):
     pemakaian = get_object_or_404(PemakaianBahanBaku, id=id)
@@ -761,28 +850,23 @@ def hasil_produksi_list(request):
     data = HasilProduksi.objects.select_related(
         'proses_produksi',
         'nama_hasil_produksi',
-        'quality',
+        'quality', 
         'pemakaian_bahan',
     )
-
-    # ambil parameter filter
-    nama_filter = request.GET.get('nama')
-    quality_filter = request.GET.get('quality')
+    
+    # Ambil parameter pencarian universal dan tanggal
+    search_query = request.GET.get('search', '')
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
 
-    if nama_filter:
+    # 1. FILTER PENCARIAN UNIVERSAL (Nama Produk ATAU Quality)
+    if search_query:
         data = data.filter(
-            nama_hasil_produksi__nama_hasil_produksi__icontains=nama_filter
+            Q(nama_hasil_produksi__nama_hasil_produksi__icontains=search_query) | 
+            Q(qc__quality__quality__icontains=search_query) # Pastikan relasinya bener, misal: quality__nama_quality tergantung models lu
         )
 
-    # SEARCH QUALITY (STRING)
-    if quality_filter:
-        data = data.filter(
-            qc__quality__quality__icontains=quality_filter
-        )
-
-    # FILTER tanggal
+    # 2. FILTER TANGGAL
     if date_from and date_to:
         data = data.filter(tanggal_produksi__range=[date_from, date_to])
     elif date_from:
@@ -796,15 +880,14 @@ def hasil_produksi_list(request):
         'bahan': PemakaianBahanBaku.objects.all(),
         'nama': NamaHasilProduksi.objects.all(),
         'quality': Quality.objects.all(),
-        'nama_filter': nama_filter,
-        'quality_filter': quality_filter,   
+        
+        # Kirim balik value biar di HTML tetep nangkring di formnya
+        'search_query': search_query, 
         'date_from': date_from,
         'date_to': date_to,
     }
 
     return render(request, 'produksi/list_hasil_produksi.html', context)
-
-
 
 
 def ajax_bahan_by_proses(request):
@@ -902,9 +985,29 @@ def rekap_hasil_produksi(request):
     return render(request, 'produksi/rekap_hasil_produksi.html', context)
 
 def penjualan_list(request):
-    data = Penjualan.objects.select_related(
-        'hasil_produksi', 'pembeli'
-    )
+    # Ambil parameter dari form filter
+    search = request.GET.get('search', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
+    # Base query
+    data = Penjualan.objects.select_related('hasil_produksi', 'pembeli')
+
+    if search:
+            data = data.filter(
+                # Tembus 2 kali untuk produk:
+                # hasil_produksi (di Penjualan) -> nama_hasil_produksi (di HasilProduksi) -> nama_hasil_produksi (di NamaHasilProduksi yang berupa CharField)
+                Q(hasil_produksi__nama_hasil_produksi__nama_hasil_produksi__icontains=search) |
+                
+                # Tembus 1 kali untuk pembeli:
+                # pembeli (di Penjualan) -> nama_pembeli (di model Pembeli yang berupa CharField)
+                Q(pembeli__nama_pembeli__icontains=search) 
+            )
+    if date_from:
+        data = data.filter(tanggal_penjualan__gte=date_from)
+    if date_to:
+        data = data.filter(tanggal_penjualan__lte=date_to)
+
     hasil = HasilProduksi.objects.all()
     pembeli = Pembeli.objects.all()
 
@@ -912,15 +1015,15 @@ def penjualan_list(request):
         'data': data,
         'hasil': hasil,
         'pembeli': pembeli,
-
+        # Kirim tanggal agar tetap muncul di input field setelah difilter
+        'date_from': date_from,
+        'date_to': date_to,
     })
-
 from datetime import datetime
 
 @transaction.atomic
 def penjualan_add(request):
     if request.method == "POST":
-
         hasil = get_object_or_404(HasilProduksi, id=request.POST["hasil_produksi"])
         pcs = int(request.POST["pcs"])
         m3 = Decimal(request.POST["m3"])
@@ -952,40 +1055,54 @@ def penjualan_add(request):
             pcs=pcs,
             m3=m3,
             total_harga=Decimal(total_harga),
-            status='pending',
         )
         print("TOTAL:", request.POST.get("total_harga"))
         # 🔥 INI YANG WAJIB ADA
-        ValidasiAccounting.objects.create(
-            jenis_validasi='penjualan',
-            penjualan=penjualan,
-            disetujui=False
-        )
 
         return redirect("penjualan_list")
     
 @transaction.atomic
 def penjualan_edit(request, id):
     penjualan = get_object_or_404(Penjualan, id=id)
-    hasil = penjualan.hasil_produksi
+    hasil_lama = penjualan.hasil_produksi # Simpan data produk yang lama
 
     if request.method == "POST":
+        # Ambil data inputan baru
         pcs_baru = int(request.POST["pcs"])
         m3_baru = Decimal(request.POST["m3"])
+        tanggal_baru = request.POST["tanggal_penjualan"]
+        pembeli_id = request.POST["pembeli"]
+        hasil_baru_id = request.POST["hasil_produksi"]
 
-        # BALIKKAN STOK LAMA
-        hasil.sisa_pcs += penjualan.pcs
-        hasil.sisa_m3 += penjualan.m3
+        pembeli_baru = get_object_or_404(Pembeli, id=pembeli_id)
 
-        # CEK STOK BARU
-        if pcs_baru > hasil.sisa_pcs or m3_baru > hasil.sisa_m3:
-            raise ValueError("Stok tidak mencukupi")
+        # 1. BALIKKAN STOK LAMA (ke produk yang lama)
+        hasil_lama.sisa_pcs += penjualan.pcs
+        hasil_lama.sisa_m3 += penjualan.m3
+        hasil_lama.save()
 
-        # KURANGI STOK BARU
-        hasil.sisa_pcs -= pcs_baru
-        hasil.sisa_m3 -= m3_baru
-        hasil.save()
+        # 2. TENTUKAN PRODUK BARUNYA
+        # Jika nama produk di form tidak diganti (masih sama), pakai object hasil_lama yang stoknya baru saja direfund.
+        if hasil_lama.id == int(hasil_baru_id):
+            hasil_baru = hasil_lama
+        else:
+            # Jika user mengganti produknya ke barang lain, ambil object produk yang baru
+            hasil_baru = get_object_or_404(HasilProduksi, id=hasil_baru_id)
 
+        # 3. CEK STOK PRODUK BARU
+        if pcs_baru > hasil_baru.sisa_pcs or m3_baru > hasil_baru.sisa_m3:
+            # Catatan: Jika ingin lebih rapi, bisa pakai messages.error() lalu return render kembali ke form
+            raise ValueError("Stok tidak mencukupi untuk produk yang dipilih")
+
+        # 4. KURANGI STOK PRODUK BARU
+        hasil_baru.sisa_pcs -= pcs_baru
+        hasil_baru.sisa_m3 -= m3_baru
+        hasil_baru.save()
+
+        # 5. UPDATE DATA TRANSAKSI PENJUALAN
+        penjualan.tanggal_penjualan = tanggal_baru
+        penjualan.hasil_produksi = hasil_baru
+        penjualan.pembeli = pembeli_baru
         penjualan.pcs = pcs_baru
         penjualan.m3 = m3_baru
         penjualan.total_harga = request.POST["total_harga"]

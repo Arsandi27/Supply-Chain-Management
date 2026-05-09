@@ -245,7 +245,8 @@
         </div>
     </main>
     <!-- Script for Chart.js Initialization -->
-    <!-- Script for Chart.js Initialization -->
+
+</body>
     <script>
         // Memastikan script jalan setelah seluruh elemen HTML selesai dimuat
         document.addEventListener("DOMContentLoaded", function () {
@@ -258,75 +259,74 @@
             const labels = [
                 {% for data in grafik_data %}
                 "{{ data.bahan_baku__nama_bahan|escapejs }}"{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        ];
+                {% endfor %}
+            ];
 
-        const dataValues = [
-            {% for data in grafik_data %}
-        { { data.total_stok |default: 0 } } {% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        ];
+            // PERBAIKAN: Spasi di kurung kurawal dihapus menjadi {{ ... }}
+            const dataValues = [
+                {% for data in grafik_data %}
+                {{data.total_stok|default:0}}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            ];
 
-        // Jika data kosong, tampilkan log di console untuk debug
-        if (dataValues.length === 0) {
-            console.warn("Data chart kosong, periksa context 'grafik_data' di views.py");
-        }
+            // Jika data kosong, tampilkan log di console untuk debug
+            if (dataValues.length === 0) {
+                console.warn("Data chart kosong, periksa context 'grafik_data' di views.py");
+            }
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Masuk (pcs)',
-                    data: dataValues,
-                    backgroundColor: '#191970',
-                    borderRadius: 6,
-                    barPercentage: 0.6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                // --- ANIMASI TINGKAT LANJUT ---
-                animations: {
-                    y: {
-                        easing: 'easeOutQuart',
-                        duration: 2000,
-                        from: (ctx) => ctx.chart.scales.y.getPixelForValue(0), // Mulai dari dasar grafik
-                        delay: (ctx) => ctx.dataIndex * 150 // Efek staggered (muncul satu-satu)
-                    }
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Masuk (pcs)',
+                        data: dataValues,
+                        backgroundColor: '#191970',
+                        borderRadius: 6,
+                        barPercentage: 0.6
+                    }]
                 },
-                // ------------------------------
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(25, 25, 112, 0.9)',
-                        titleFont: { size: 14, weight: 'bold' },
-                        padding: 12
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0,
-                            color: '#64748b'
-                        },
-                        grid: {
-                            borderDash: [5, 5],
-                            color: '#e2e8f0',
-                            drawBorder: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // --- ANIMASI TINGKAT LANJUT ---
+                    animations: {
+                        y: {
+                            easing: 'easeOutQuart',
+                            duration: 2000,
+                            from: (ctx) => ctx.chart.scales.y.getPixelForValue(0), // Mulai dari dasar grafik
+                            delay: (ctx) => ctx.dataIndex * 150 // Efek staggered (muncul satu-satu)
                         }
                     },
-                    x: {
-                        ticks: { color: '#64748b' },
-                        grid: { display: false }
+                    // ------------------------------
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(25, 25, 112, 0.9)',
+                            titleFont: { size: 14, weight: 'bold' },
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                color: '#64748b'
+                            },
+                            grid: {
+                                borderDash: [5, 5],
+                                color: '#e2e8f0',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: { color: '#64748b' },
+                            grid: { display: false }
+                        }
                     }
                 }
-            }
+            });
         });
-    });
     </script>
-</body>
-
-</html>
+</html> 

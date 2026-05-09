@@ -13,7 +13,7 @@
     {% include 'parts/sidebar_produksi.html' %}
     <div class="content">
         <h2>Proses Produksi</h2>
-        <button onclick="openAdd()">+ Tambah</button>
+        <button class="btn-action btn-tambah" onclick="openAdd()">+ Tambah</button>
 
         <table border="1">
             <tr>
@@ -28,46 +28,84 @@
                 <td>{{ d.tanggal_produksi }}</td>
                 <td>{{ d.keterangan }}</td>
                 <td>
-                    <button onclick="openEdit('{{ d.id }}')">Edit</button>
-                    <button onclick="openDelete('{{ d.id }}')">Hapus</button>
+                    <button class="btn-action btn-edit" onclick="openEdit('{{ d.id }}')">Edit</button>
+                    <button class="btn-action btn-hapus" onclick="openDelete('{{ d.id }}')">Hapus</button>
                 </td>
             </tr>
             {% endfor %}
         </table>
     </div>
-    <!-- ADD -->
-    <div class="modal" id="addModal" style="display:none">
+   <!-- ================= MODAL TAMBAH PROSES PRODUKSI ================= -->
+    <div class="modal" id="addModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h3>Tambah Proses Produksi</h3>
+
             <form method="post" action="{% url 'proses_produksi_add' %}">
                 {% csrf_token %}
-                <input type="date" name="tanggal_produksi"><br>
-                <textarea name="keterangan"></textarea><br>
-                <button>Simpan</button>
+                
+                <div class="form-group">
+                    <label>Tanggal Produksi</label>
+                    <input type="date" name="tanggal_produksi" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Keterangan Proses</label>
+                    <textarea name="keterangan" rows="4" placeholder="Contoh: Pemotongan kayu gelondongan ke ukuran standar..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan Proses</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- EDIT -->
-    <div class="modal" id="editModal" style="display:none">
+    <!-- ================= MODAL EDIT PROSES PRODUKSI ================= -->
+    <div class="modal" id="editModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h3>Edit Proses Produksi</h3>
+
             <form method="post" id="editForm">
                 {% csrf_token %}
-                <input type="date" name="tanggal_produksi"><br>
-                <textarea name="keterangan"></textarea><br>
-                <button>Update</button>
+                
+                <div class="form-group">
+                    <label>Tanggal Produksi</label>
+                    <input type="date" name="tanggal_produksi" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Keterangan Proses</label>
+                    <textarea name="keterangan" rows="4"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Data</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- DELETE -->
-    <div class="modal" id="deleteModal" style="display:none">
-        <span class="close" onclick="closeModal('addModal')">X</span>
-        <div class="modal-content">
+    <!-- ================= MODAL HAPUS ================= -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content text-center">
+            <div class="mb-4 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <h3 class="border-none pb-0">Hapus Data Produksi?</h3>
+            <p class="text-sm text-gray-500 mb-6">Menghapus data produksi ini dapat mempengaruhi riwayat penggunaan bahan baku terkait.</p>
+
             <form method="post" id="deleteForm">
                 {% csrf_token %}
-                <button>Ya</button>
+                <div class="modal-actions justify-center">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Ya, Hapus</button>
+                </div>
             </form>
         </div>
     </div>

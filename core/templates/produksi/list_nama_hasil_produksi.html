@@ -11,7 +11,7 @@
     {% include 'parts/sidebar_produksi.html' %}
     <div class="content">
         <h2>Data Nama Hasil Produksi</h2>
-        <button onclick="openAddModal()">+ Tambah Nama Hasil Produksi</button>
+        <button class="btn-action btn-tambah" onclick="openAddModal()">+ Tambah Nama Hasil Produksi</button>
 
         <br><br>
 
@@ -27,53 +27,76 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ s.nama_hasil_produksi }}</td>
                 <td>
-                    <button onclick="openEditModal('{{ s.id }}','{{ s.nama_hasil_produksi }}')">Edit</button>
-                    <button onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
+                    <button class="btn-action btn-edit" onclick="openEditModal('{{ s.id }}','{{ s.nama_hasil_produksi }}')">Edit</button>
+                    <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
                 </td>
             </tr>
             {% endfor %}
         </table>
-    </div>
-    <!-- ================= MODAL TAMBAH ================= -->
+    </div><!-- ================= MODAL TAMBAH NAMA HASIL PRODUKSI ================= -->
     <div class="modal" id="addModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
-            <h3>Tambah Nama Hasil Produksi</h3>
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h3>Tambah Nama Produk</h3>
 
             <form method="post" action="/hasil/add/">
                 {% csrf_token %}
-                <input type="text" name="nama_hasil_produksi" placeholder="Nama Hasil Produksi" required><br><br>
-                <button type="submit">Simpan</button>
+                <div class="form-group">
+                    <label>Nama Hasil Produksi</label>
+                    <input type="text" name="nama_hasil_produksi" placeholder="Contoh: Long Core OPC, Papan Palet..." required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan Produk</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- ================= MODAL EDIT ================= -->
+    <!-- ================= MODAL EDIT NAMA HASIL PRODUKSI ================= -->
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">X</span>
-            <h3>Edit Supplier</h3>
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h3>Edit Nama Produk</h3>
 
             <form method="post" id="editForm">
                 {% csrf_token %}
-                <input type="text" name="nama_hasil_produksi" id="editNamaHasilProduksi" required><br><br>
-                <button type="submit">Update</button>
+                <div class="form-group">
+                    <label>Nama Hasil Produksi</label>
+                    <input type="text" name="nama_hasil_produksi" id="editNamaHasilProduksi" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Data</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- ================= MODAL HAPUS ================= -->
     <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('deleteModal')">X</span>
-            <h3>Hapus Data?</h3>
+        <div class="modal-content text-center">
+            <div class="mb-4 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <h3 class="border-none pb-0">Hapus Nama Produk?</h3>
+            <p class="text-sm text-gray-500 mb-6">Menghapus nama produk ini dapat menyebabkan data terkait di laporan produksi tidak terbaca.</p>
 
             <form method="post" id="deleteForm">
                 {% csrf_token %}
-                <button type="submit">Ya, Hapus</button>
+                <div class="modal-actions justify-center">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya ">Ya, Hapus</button>
+                </div>
             </form>
         </div>
     </div>
+    
+</body>
 
     <script>
         function openAddModal() {
@@ -95,7 +118,5 @@
             document.getElementById(id).style.display = 'none';
         }
     </script>
-
-</body>
 
 </html>

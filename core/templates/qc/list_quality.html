@@ -13,7 +13,7 @@
     <main class="flex-1 h-full overflow-y-auto p-6" style="margin-left: 256px;">
         <div class="content">
             <h2 class="text-2xl font-bold mb-4">Data Quality</h2>
-            <button class="btn bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600" onclick="openAddModal()">+ Tambah Quality</button>
+            <button class="btn-action btn-tambah" onclick="openAddModal()">+ Tambah Quality</button>
 
             <br><br>
 
@@ -29,55 +29,74 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ s.quality }}</td>
                     <td>
-                        <button onclick="openEditModal('{{ s.id }}','{{ s.quality }}')">Edit</button>
-                        <button onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
+                        <button class="btn-action btn-edit" onclick="openEditModal('{{ s.id }}','{{ s.quality }}')">Edit</button>
+                        <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
                     </td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
     </main>
-    <!-- ================= MODAL TAMBAH ================= -->
-    <div class="modal" id="addModal">
+    
+  <div class="modal" id="addModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
-            <h3>Tambah Quality</h3>
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h3>Tambah Quality Grade</h3>
 
             <form method="post" action="/quality/add/">
                 {% csrf_token %}
-                <input type="text" name="quality" placeholder="Quality" required><br><br>
-                <button type="submit">Simpan</button>
+                <div class="form-group">
+                    <label>Nama Quality / Grade</label>
+                    <input type="text" name="quality" placeholder="Contoh: Grade A, Lulus QC..." required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-batal" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-modal btn-ya">Simpan Data</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- ================= MODAL EDIT ================= -->
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">X</span>
-            <h3>Edit Supplier</h3>
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h3>Edit Data Quality</h3>
 
             <form method="post" id="editForm">
                 {% csrf_token %}
-                <input type="text" name="quality" id="editQuality" required><br><br>
-                <button type="submit">Update</button>
+                <div class="form-group">
+                    <label>Nama Quality / Grade</label>
+                    <input type="text" name="quality" id="editQuality" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Data</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- ================= MODAL HAPUS ================= -->
     <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('deleteModal')">X</span>
-            <h3>Hapus Data?</h3>
+        <div class="modal-content text-center">
+            <div class="mb-4 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <h3 class="border-none pb-0">Hapus Data Quality?</h3>
+            <p class="text-sm text-gray-500 mb-6">Menghapus data ini dapat mempengaruhi status pada laporan Quality Control.</p>
 
             <form method="post" id="deleteForm">
                 {% csrf_token %}
-                <button type="submit">Ya, Hapus</button>
+                <div class="modal-actions justify-center">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Ya, Hapus</button>
+                </div>
             </form>
         </div>
     </div>
-
 </body>
 
 <script>
@@ -98,6 +117,12 @@
 
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';
+    }
+    // Klik di luar area modal untuk menutup
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
     }
 </script>
 

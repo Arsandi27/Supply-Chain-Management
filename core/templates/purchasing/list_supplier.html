@@ -4,41 +4,44 @@
 
 <head>
   <title>Data Supplier</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
   {% include 'parts/sidebar_purchasing.html' %}
-  <div class="content">
-    <h2>Data Supplier</h2>
-    <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
+  <main class="flex-1 flex flex-col h-full overflow-y-auto">
+    <div class="content">
+      <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Supplier</h2>
+      <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
 
-    <br><br>
+      <br><br>
 
-    <table>
-      <tr>
-        <th>No</th>
-        <th>Nama</th>
-        <th>Alamat</th>
-        <th>Kontak</th>
-        <th>Aksi</th>
-      </tr>
+      <table>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Alamat</th>
+          <th>Kontak</th>
+          <th>Aksi</th>
+        </tr>
 
-      {% for s in data %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ s.nama_supplier }}</td>
-        <td>{{ s.alamat }}</td>
-        <td>{{ s.kontak }}</td>
-        <td>
-          <button class="btn-action btn-edit"
-            onclick="openEditModal('{{ s.id }}','{{ s.nama_supplier }}','{{ s.alamat }}','{{ s.kontak }}')">Edit</button>
-          <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
+        {% for s in data %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ s.nama_supplier }}</td>
+          <td>{{ s.alamat }}</td>
+          <td>{{ s.kontak }}</td>
+          <td>
+            <button class="btn-action btn-edit"
+              onclick="openEditModal('{{ s.id }}','{{ s.nama_supplier }}','{{ s.alamat }}','{{ s.kontak }}')">Edit</button>
+            <button class="btn-action btn-hapus" onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </main>
   <div class="modal" id="addModal">
     <div class="modal-content">
       <span class="close" onclick="closeModal('addModal')">&times;</span>

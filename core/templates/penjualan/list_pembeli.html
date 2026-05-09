@@ -4,126 +4,101 @@
 
 <head>
     <title>Data Pembeli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/penjualan.css' %}">
-    <style>
-        body {
-            font-family: Arial;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background: #f4f4f4;
-        }
-
-        button {
-            padding: 6px 10px;
-            cursor: pointer;
-        }
-
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background: white;
-            width: 400px;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 5px;
-        }
-
-        .close {
-            float: right;
-            cursor: pointer;
-            color: red;
-        }
-    </style>
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_penjualan.html' %}
-    <div class="content">
-    <h2>Data Pembeli</h2>
-    <button onclick="openAddModal()">+ Tambah Pembeli</button>
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
+        <div class="content">
+            <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Pembeli</h2>
+            <button class="btn-action btn-tambah" onclick="openAddModal()">+ Tambah Pembeli</button>
 
-    <br><br>
+            <br><br>
 
-    <table>
-        <tr>
-            <th>Nama</th>
+            <table>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Aksi</th>
+                </tr>
 
-            <th>Aksi</th>
-        </tr>
-
-        {% for s in data %}
-        <tr>
-            <td>{{ s.nama_pembeli}}</td>
-            <td>
-                <button onclick="openEditModal('{{ s.id }}','{{ s.nama_pembeli }}')">Edit</button>
-                <button onclick="openDeleteModal('{{ s.id }}')">Hapus</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
-    <!-- ================= MODAL TAMBAH ================= -->
-    <div class="modal" id="addModal">
+                {% for s in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ s.nama_pembeli}}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="openEditModal('{{ s.id }}','{{ s.nama_pembeli }}')"><i class="fa fa-edit"></i> Edit</button>
+                        
+                        <button class="btn-action btn-delete" onclick="openDeleteModal('{{ s.id }}')"><i class="fa fa-trash"></i> Hapus</button>
+                    </td>   
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </main>
+<div class="modal" id="addModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">X</span>
-            <h3>Tambah Supplier</h3>
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h3>Tambah Pembeli Baru</h3>
 
             <form method="post" action="/pembeli/add/">
                 {% csrf_token %}
-                <input type="text" name="nama_pembeli" placeholder="Nama Pembeli" required><br><br>
-                <button type="submit">Simpan</button>
+                <div class="form-group">
+                    <label>Nama Pembeli</label>
+                    <input type="text" name="nama_pembeli" placeholder="Masukkan nama pelanggan atau perorangan..." required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan Pembeli</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- ================= MODAL EDIT ================= -->
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">X</span>
-            <h3>Edit Supplier</h3>
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h3>Edit Data Pembeli</h3>
 
             <form method="post" id="editForm">
                 {% csrf_token %}
-                <input type="text" name="nama_pembeli" id="editNama" required><br><br>
-                <button type="submit">Update</button>
+                <div class="form-group">
+                    <label>Nama Pembeli</label>
+                    <input type="text" name="nama_pembeli" id="editNama" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('editModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Update Data</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- ================= MODAL HAPUS ================= -->
     <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('deleteModal')">X</span>
-            <h3>Hapus Data?</h3>
+        <div class="modal-content text-center">
+            <span class="close" onclick="closeModal('deleteModal')">&times;</span>
+            <div class="mb-4 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <h3 class="border-none pb-0">Hapus Data Pembeli?</h3>
+            <p class="text-sm text-gray-500 mb-6">Tindakan ini akan menghapus riwayat pembeli secara permanen.</p>
 
             <form method="post" id="deleteForm">
                 {% csrf_token %}
-                <button type="submit">Ya, Hapus</button>
+                <div class="modal-actions justify-center">
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('deleteModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Ya, Hapus</button>
+                </div>
             </form>
         </div>
     </div>
+</body>
 
     <script>
         function openAddModal() {
@@ -144,8 +119,11 @@
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
         }
+            window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
     </script>
-
-</body>
 
 </html>
