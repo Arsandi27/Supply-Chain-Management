@@ -79,7 +79,8 @@ h2 {
 /* Base style untuk semua tombol di area filter */
 .btn-filter,
 .btn-reset,
-.btn-export {
+.btn-export,
+.btn-print {
     padding: 6px 12px;
     border-radius: 4px;
     font-family: inherit;
@@ -128,6 +129,17 @@ h2 {
 
 .btn-export:hover {
     background-color: #f0fdf4;
+}
+
+/* Styling Khusus Tombol Print (Merah) */
+.btn-print {
+    border-color: #a31616;
+    color: #a31616;
+    background-color: #fff;
+}
+
+.btn-print:hover {
+    background-color: #fee2e2;
 }
 
 /* --- BUTTONS --- */

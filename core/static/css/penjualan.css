@@ -1,429 +1,439 @@
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+body {
+    font-family: 'Inter', sans-serif;
+}
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
+::-webkit-scrollbar-track {
+    background: transparent;
+}
 
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
 
-        /* Kontainer utama agar tombol Tambah dan Form sejajar/rapi */
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+/* Kontainer utama agar tombol Tambah dan Form sejajar/rapi */
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
 
-        /* Mengatur isi form agar sejajar menyamping */
-        .filter-form {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            font-size: 14px;
-            color: #475569;
-        }
+/* Mengatur isi form agar sejajar menyamping */
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: #475569;
+}
 
-        /* Style untuk kotak Input Text & Date */
-        .filter-form input[type="text"],
-        .filter-form input[type="date"] {
-            padding: 6px 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            /* Sudut sedikit melengkung */
-            font-family: inherit;
-            font-size: 14px;
-            outline: none;
-            color: #1e293b;
-            transition: 0.2s ease-in-out;
-        }
+/* Style untuk kotak Input Text & Date */
+.filter-form input[type="text"],
+.filter-form input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    /* Sudut sedikit melengkung */
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    color: #1e293b;
+    transition: 0.2s ease-in-out;
+}
 
-        .filter-form input[type="text"]:focus,
-        .filter-form input[type="date"]:focus {
-            border-color: #191970;
-        }
+.filter-form input[type="text"]:focus,
+.filter-form input[type="date"]:focus {
+    border-color: #191970;
+}
 
-        /* Base style untuk semua tombol di area filter */
-        .btn-filter,
-        .btn-reset,
-        .btn-export {
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.2s;
-            border: 1px solid #cbd5e1;
-            background-color: #ffffff;
-            color: #1e293b;
-            display: inline-block;
-            text-align: center;
-        }
+/* Base style untuk semua tombol di area filter */
+.btn-filter,
+.btn-reset,
+.btn-export,
+.btn-print {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #1e293b;
+    display: inline-block;
+    text-align: center;
+}
 
-        /* Efek saat tombol di-hover (disorot mouse) */
-        .btn-filter:hover,
-        .btn-reset:hover {
-            background-color: #f1f5f9;
-        }
+/* Efek saat tombol di-hover (disorot mouse) */
+.btn-filter:hover,
+.btn-reset:hover {
+    background-color: #f1f5f9;
+}
 
-        /* Styling Khusus Tombol Export (Hijau) */
-        .btn-export {
-            border-color: #16a34a;
-            color: #16a34a;
-            font-weight: 500;
-        }
+/* Styling Khusus Tombol Export (Hijau) */
+.btn-export {
+    border-color: #16a34a;
+    color: #16a34a;
+    font-weight: 500;
+}
+.btn-export:hover{
+    background-color: #f0fdf4;
+}
 
-        .btn-export:hover {
-            background-color: #f0fdf4;
-        }
-
-        /* --- TABLE (Tampilan Melengkung & Bergaris Sesuai Gambar) --- */
-        table {
-            width: 100%;
-            background-color: #ffffff;
-            border-collapse: separate;
-            border-spacing: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            font-size: 13px;
-        }
-
-        thead {
-            background-color: #191970;
-            color: #ffffff;
-        }
-
-        th {
-            background-color: #191970;
-            color: #ffffff;
-            padding: 14px 16px;
-            text-align: center;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.05em;
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        th:last-child {
-            border-right: none;
-        }
-
-        /* Warna Baris Ganjil (Putih) */
-        tbody tr:nth-child(odd) {
-            background-color: #ffffff;
-        }
-
-        /* Warna Baris Genap (Abu-abu Muda) */
-        tbody tr:nth-child(even) {
-            background-color: #f1f5f9;
-            /* Abu-abu terang yang bersih */
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            /* Diperhalus agar tidak terlalu kontras */
-            border-right: 1px solid #e2e8f0;
-            /* Garis vertikal disesuaikan agar terlihat di baris putih */
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        td:last-child {
-            border-right: none;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Efek Hover agar baris yang disorot tetap terlihat beda */
-        tbody tr:hover {
-            background-color: #e2e8f0 !important;
-        }
-
-        tfoot {
-            background-color: #191970;
-            color: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
-        }
-
-        tfoot tr {
-            padding: 14px 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 13px;
-            /* Garis pemisah atas untuk membatasi dengan baris terakhir body */
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            /* Garis pemisah vertikal antar kolom */
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
-            vertical-align: middle;
-        }
-
-        /* Hilangkan garis kanan di kolom terakhir agar rapi */
-        tfoot tr:last-child {
-            border-right: none;
-            border-bottom: none;
-        }
-
-        /* Penyesuaian khusus untuk baris "JUMLAH TRANSAKSI" agar teks di tengah */
-        .text-center {
-            text-align: center;
-        }
-
-        .kolom-aksi {
-            display: flex;
-            /* Tambahkan ini agar gap berfungsi */
-            align-items: center;
-            justify-content: center;
-            /* Sesuaikan ke center jika teks tabel center */
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        /* Styling Khusus Tombol Tambah (Biru Tua) */
-        .btn-tambah {
-            padding: 7px 14px;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            background-color: #191970;
-            /* Tema Biru Tua */
-            color: #ffffff;
-            border: 1px solid #191970;
-        }
-
-        .btn-tambah:hover {
-            background-color: #121254;
-        }
+.btn-print {
+    border-color: #a31616;
+    color: #a31616;
+    background-color: #fff;
+}
+.btn-print:hover{
+    background-color: #fee2e2;
+}
 
 
-        /* Base style untuk semua tombol aksi agar seragam */
-        .btn-action {
-            padding: 6px 16px;
-            /* Padding kiri-kanan ditambah sedikit agar lebih lega */
-            border-radius: 4px;
-            /* Kunci lengkungan modern */
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            /* Menghilangkan border default browser */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* --- TABLE (Tampilan Melengkung & Bergaris Sesuai Gambar) --- */
+table {
+    width: 100%;
+    background-color: #ffffff;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    font-size: 13px;
+}
 
-        /* Tombol Edit - Midnight Blue */
-        .btn-edit {
-            background-color: #191970;
-            color: #ffffff;
-        }
+thead {
+    background-color: #191970;
+    color: #ffffff;
+}
 
-        .btn-edit:hover {
-            background-color: #2a2a8a;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+th {
+    background-color: #191970;
+    color: #ffffff;
+    padding: 14px 16px;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
 
-        /* Tombol Hapus - Light Gray */
-        .btn-hapus {
-            background-color: #F3F4F6;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-            /* Border halus agar tidak 'mati' di background putih */
-        }
+th:last-child {
+    border-right: none;
+}
 
-        .btn-hapus:hover {
-            background-color: #fee2e2;
-            /* Berubah jadi merah sangat muda saat hover */
-            color: #dc2626;
-            /* Teks berubah jadi merah */
-            border-color: #fca5a5;
-        }
+/* Warna Baris Ganjil (Putih) */
+tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* Warna Baris Genap (Abu-abu Muda) */
+tbody tr:nth-child(even) {
+    background-color: #f1f5f9;
+    /* Abu-abu terang yang bersih */
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    /* Diperhalus agar tidak terlalu kontras */
+    border-right: 1px solid #e2e8f0;
+    /* Garis vertikal disesuaikan agar terlihat di baris putih */
+    vertical-align: middle;
+    text-align: center;
+}
+
+td:last-child {
+    border-right: none;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Efek Hover agar baris yang disorot tetap terlihat beda */
+tbody tr:hover {
+    background-color: #e2e8f0 !important;
+}
+
+tfoot {
+    background-color: #191970;
+    color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+}
+
+tfoot tr {
+    padding: 14px 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    /* Garis pemisah atas untuk membatasi dengan baris terakhir body */
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    /* Garis pemisah vertikal antar kolom */
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    vertical-align: middle;
+}
+
+/* Hilangkan garis kanan di kolom terakhir agar rapi */
+tfoot tr:last-child {
+    border-right: none;
+    border-bottom: none;
+}
+
+/* Penyesuaian khusus untuk baris "JUMLAH TRANSAKSI" agar teks di tengah */
+.text-center {
+    text-align: center;
+}
+
+.kolom-aksi {
+    display: flex;
+    /* Tambahkan ini agar gap berfungsi */
+    align-items: center;
+    justify-content: center;
+    /* Sesuaikan ke center jika teks tabel center */
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* Styling Khusus Tombol Tambah (Biru Tua) */
+.btn-tambah {
+    padding: 7px 14px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    background-color: #191970;
+    /* Tema Biru Tua */
+    color: #ffffff;
+    border: 1px solid #191970;
+}
+
+.btn-tambah:hover {
+    background-color: #121254;
+}
 
 
-        /* --- MODALS --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-        }
+/* Base style untuk semua tombol aksi agar seragam */
+.btn-action {
+    padding: 6px 16px;
+    /* Padding kiri-kanan ditambah sedikit agar lebih lega */
+    border-radius: 4px;
+    /* Kunci lengkungan modern */
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    /* Menghilangkan border default browser */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .modal-content {
-            background-color: #ffffff;
-            margin: 5% auto;
-            padding: 32px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
+/* Tombol Edit - Midnight Blue */
+.btn-edit {
+    background-color: #191970;
+    color: #ffffff;
+}
 
-        .modal-content h3 {
-            color: #191970;
-            font-size: 20px;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 12px;
-        }
+.btn-edit:hover {
+    background-color: #2a2a8a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
 
-        .close {
-            position: absolute;
-            right: 24px;
-            top: 24px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #94a3b8;
-            cursor: pointer;
-            line-height: 1;
-        }
+/* Tombol Hapus - Light Gray */
+.btn-hapus {
+    background-color: #F3F4F6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    /* Border halus agar tidak 'mati' di background putih */
+}
 
-        .close:hover {
-            color: #1e293b;
-        }
+.btn-hapus:hover {
+    background-color: #fee2e2;
+    /* Berubah jadi merah sangat muda saat hover */
+    color: #dc2626;
+    /* Teks berubah jadi merah */
+    border-color: #fca5a5;
+}
 
-        /* --- FORM GROUP SPACING --- */
-        .form-group {
-            margin-bottom: 24px;
-            /* Ditambah biar lebih lega antar baris */
-            width: 100%;
-        }
 
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #475569;
-            /* Warna slate yang sedikit lebih tegas */
-            margin-bottom: 10px;
-            /* Jarak label ke input */
-        }
+/* --- MODALS --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
 
-        /* Polesan Input & Select - Gabungkan jadi satu saja */
-        .form-group select,
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            color: #1e293b;
-            box-sizing: border-box;
-            outline: none;
-            transition: all 0.2s ease;
-        }
+.modal-content {
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 32px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
 
-        .form-group select:focus,
-        .form-group input:focus {
-            background-color: #ffffff;
-            border-color: #191970;
-            box-shadow: 0 0 0 4px rgba(25, 25, 112, 0.1);
-        }
+.modal-content h3 {
+    color: #191970;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 12px;
+}
 
-        /* Tambahkan ini di bagian CSS form-group kamu */
-        .form-group select,
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            color: #1e293b;
-            box-sizing: border-box;
-            outline: none;
-            transition: all 0.2s ease;
-            resize: none;
-            /* Biar user gak narik-narik ukuran textarea secara manual */
-        }
+.close {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+}
 
-        .form-group textarea:focus {
-            background-color: #ffffff;
-            border-color: #191970;
-            box-shadow: 0 0 0 4px rgba(25, 25, 112, 0.1);
-        }
+.close:hover {
+    color: #1e293b;
+}
 
-        /* --- GRID MANUAL (Jika Tailwind Grid tidak jalan) --- */
-        .grid-2-kolom {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            /* Jarak antara PCS dan M3 */
-        }
+/* --- FORM GROUP SPACING --- */
+.form-group {
+    margin-bottom: 24px;
+    /* Ditambah biar lebih lega antar baris */
+    width: 100%;
+}
 
-        /* Warna Label berubah saat input di-focus */
-        .form-group:focus-within label {
-            color: #191970;
-        }
+.form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    /* Warna slate yang sedikit lebih tegas */
+    margin-bottom: 10px;
+    /* Jarak label ke input */
+}
 
-        /* Styling Placeholder */
-        ::placeholder {
-            color: #94a3b8;
-            opacity: 0.8;
-        }
+/* Polesan Input & Select - Gabungkan jadi satu saja */
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #1e293b;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+}
 
-        .btn-ya {
-            background-color: #191970;
-            color: #ffffff;
-        }
+.form-group select:focus,
+.form-group input:focus {
+    background-color: #ffffff;
+    border-color: #191970;
+    box-shadow: 0 0 0 4px rgba(25, 25, 112, 0.1);
+}
 
-        .btn-ya:hover {
-            background-color: #2a2a8a;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+/* Tambahkan ini di bagian CSS form-group kamu */
+.form-group select,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #1e293b;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+    resize: none;
+    /* Biar user gak narik-narik ukuran textarea secara manual */
+}
 
-        /* Tombol Hapus - Light Gray */
-        .btn-tidak {
-            background-color: #F3F4F6;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-            /* Border halus agar tidak 'mati' di background putih */
-        }
+.form-group textarea:focus {
+    background-color: #ffffff;
+    border-color: #191970;
+    box-shadow: 0 0 0 4px rgba(25, 25, 112, 0.1);
+}
 
-        .btn-tidak:hover {
-            background-color: #fee2e2;
-            /* Berubah jadi merah sangat muda saat hover */
-            color: #6c6060;
-            /* Teks berubah jadi merah */
-            border-color: #fca5a5;
-        }
+/* --- GRID MANUAL (Jika Tailwind Grid tidak jalan) --- */
+.grid-2-kolom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    /* Jarak antara PCS dan M3 */
+}
+
+/* Warna Label berubah saat input di-focus */
+.form-group:focus-within label {
+    color: #191970;
+}
+
+/* Styling Placeholder */
+::placeholder {
+    color: #94a3b8;
+    opacity: 0.8;
+}
+
+.btn-ya {
+    background-color: #191970;
+    color: #ffffff;
+}
+
+.btn-ya:hover {
+    background-color: #2a2a8a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Tombol Hapus - Light Gray */
+.btn-tidak {
+    background-color: #F3F4F6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    /* Border halus agar tidak 'mati' di background putih */
+}
+
+.btn-tidak:hover {
+    background-color: #fee2e2;
+    /* Berubah jadi merah sangat muda saat hover */
+    color: #6c6060;
+    /* Teks berubah jadi merah */
+    border-color: #fca5a5;
+}

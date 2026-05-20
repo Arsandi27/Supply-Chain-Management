@@ -4,33 +4,31 @@
 
 <head>
     <title>Rekap Proses Produksi</title>
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_produksi.html' %}
-    <div class="content">
-        <h2>Rekap Proses Produksi</h2>
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
 
+    <div class="content">
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Rekap Pemakaian Bahan</h2>
         <!-- ================= FILTER ================= -->
-        <div class="actions">
-            <form method="get">
+        <div class="filter-container">
+            <form method="get" class="filter-form" style="margin-bottom: 20px;">
                 Dari :
                 <input type="date" name="start" value="{{ request.GET.start }}">
-
                 Sampai :
                 <input type="date" name="end" value="{{ request.GET.end }}">
-
-                <button type="submit">Filter</button>
-
+                <button type="submit" class="btn-filter">Filter</button>
                 <a href="{% url 'rekap_pemakaian_bahan' %}">
-                    <button type="button">Reset</button>
+                    <button type="button" class="btn-reset">Reset</button>
                 </a>
-
-                <button type="button" onclick="exportExcel()">Export Excel</button>
+                <button type="button" onclick="exportExcel()" class="btn-export">Export Excel</button>
+                <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
             </form>
         </div>
 
@@ -76,6 +74,7 @@
             </tfoot>
         </table>
     </div>
+        </main>
     <!-- ================= EXPORT ================= -->
     <script>
         function exportExcel() {

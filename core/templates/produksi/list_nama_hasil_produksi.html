@@ -4,13 +4,15 @@
 
 <head>
     <title>Data Nama Hasil Produksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_produksi.html' %}
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
     <div class="content">
-        <h2>Data Nama Hasil Produksi</h2>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Nama Hasil Produksi</h2>
         <button class="btn-action btn-tambah" onclick="openAddModal()">+ Tambah Nama Hasil Produksi</button>
 
         <br><br>
@@ -33,7 +35,9 @@
             </tr>
             {% endfor %}
         </table>
-    </div><!-- ================= MODAL TAMBAH NAMA HASIL PRODUKSI ================= -->
+    </div>
+    </main>
+    <!-- ================= MODAL TAMBAH NAMA HASIL PRODUKSI ================= -->
     <div class="modal" id="addModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('addModal')">&times;</span>

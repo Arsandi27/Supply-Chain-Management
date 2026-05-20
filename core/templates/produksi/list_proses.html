@@ -5,15 +5,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Tanggal Proses Produksi</title>
     <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_produksi.html' %}
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
     <div class="content">
-        <h2>Proses Produksi</h2>
-        <button class="btn-action btn-tambah" onclick="openAdd()">+ Tambah</button>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Proses Produksi</h2>
+        <button class="btn-action btn-tambah" style="margin-bottom: 20px;" onclick="openAdd()">+ Tambah</button>
 
         <table border="1">
             <tr>
@@ -35,6 +37,7 @@
             {% endfor %}
         </table>
     </div>
+</main>
    <!-- ================= MODAL TAMBAH PROSES PRODUKSI ================= -->
     <div class="modal" id="addModal">
         <div class="modal-content">

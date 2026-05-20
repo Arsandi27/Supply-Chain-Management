@@ -1,93 +1,99 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Rekap Bulanan Hasil Produksi Barang Jadi</title>
     <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 </head>
-<body>
-        {% include 'parts/sidebar_produksi.html' %}
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    {% include 'parts/sidebar_produksi.html' %}
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
     <div class="content">
-    <h2>Rekap Bulanan Hasil Produksi</h2>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Rekap Bulanan Hasil Produksi</h2>
+        <div class="filter-container">
+            <form method="get" class="filter-form">
+                Dari :
+                <input type="date" name="start" value="{{ start }}">
+                Sampai :
+                <input type="date" name="end" value="{{ end }}">
 
-<form method="get">
-    Dari :
-    <input type="date" name="start" value="{{ start }}">
-    Sampai :
-    <input type="date" name="end" value="{{ end }}">
+                <button type="submit" class="btn-filter">Filter</button>
+                <a href="{% url 'rekap_hasil_produksi' %}" class="btn-reset">Reset</a>
+                <button type="button" onclick="exportExcel()" class="btn-export">Export Excel</button>
+                <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
+            </form>
+        </div>
+        <br>
+        <table border="1" id="rekapTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal Produksi</th>
+                    <th>Nama Produk</th>
+                    <th>Quality</th>
+                    <th>PCS</th>
+                    <th>M3</th>
+                    <th>Jumlah Transaksi</th>
+                </tr>
+            </thead>
 
-    <button type="submit">Filter</button>
-    <a href="{% url 'rekap_hasil_produksi' %}">Reset</a>
-    <button type="button" onclick="exportExcel()">Export Excel</button>
-</form>
+            <tbody>
+                {% for d in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ d.tanggal_produksi|date:"d F Y" }}</td>
+                    <td>{{ d.nama_hasil_produksi }}</td>
+                    <td>{{ d.qc.quality }}</td>
+                    <td>{{ d.jumlah_pcs }}</td>
+                    <td>{{ d.jumlah_m3 }}</td>
+                    <td>1</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" align="center">Data tidak ada</td>
+                </tr>
+                {% endfor %}
+            </tbody>
 
-<br>
+            <tfoot>
+                <tr>
+                    <th colspan="4">TOTAL</th>
+                    <th>{{ total_pcs }}</th>
+                    <th>{{ total_m3 |floatformat:3 }}</th>
+                    <th>{{ total_transaksi }}</th>
+                </tr>
+                <tr>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    </main>
+    <script>
+        function exportExcel() {
+            const table = document.getElementById("rekapTable");
 
-<table border="1" id="rekapTable">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Tanggal Produksi</th>
-            <th>Nama Produk</th>
-            <th>Quality</th>
-            <th>PCS</th>
-            <th>M3</th>
-            <th>Jumlah Transaksi</th>
-        </tr>
-    </thead>
+            // Konversi table ke worksheet
+            const ws = XLSX.utils.table_to_sheet(table, {
+                raw: true
+            });
 
-    <tbody>
-        {% for d in data %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ d.tanggal_produksi|date:"d F Y" }}</td>
-            <td>{{ d.nama_hasil_produksi }}</td>
-            <td>{{ d.qc.quality  }}</td>
-            <td>{{ d.jumlah_pcs }}</td>
-            <td>{{ d.jumlah_m3 }}</td>
-            <td>1</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7" align="center">Data tidak ada</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+            // Buat workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Hasil Produksi");
 
-    <tfoot>
-        <tr>
-            <th colspan="4">TOTAL</th>
-            <th>{{ total_pcs }}</th>
-            <th>{{ total_m3 |floatformat:3 }}</th>
-            <th>{{ total_transaksi }}</th>
-        </tr>
-        <tr>
-        </tr>
-    </tfoot>
-</table>
-</div>
-<script>
-function exportExcel() {
-    const table = document.getElementById("rekapTable");
-
-    // Konversi table ke worksheet
-    const ws = XLSX.utils.table_to_sheet(table, {
-        raw: true
-    });
-
-    // Buat workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Rekap Hasil Produksi");
-
-    // Nama file pakai tanggal
-    const today = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `rekap_hasil_produksi_${today}.xlsx`);
-}
-</script>
+            // Nama file pakai tanggal
+            const today = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `rekap_hasil_produksi_${today}.xlsx`);
+        }
+    </script>
 
 </body>
+
 </html>

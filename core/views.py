@@ -643,7 +643,7 @@ def pemakaian_bahan_list(request):
         sisa_m3__gt=0,
     )
 
-    return render(request, 'produksi/list_proses_produksi.html', {
+    return render(request, 'produksi/list_pemakaian_bahan.html', {
         'data_detail': data, 
         'data_rekap': data_rekap, 
         'produksi': produksi,
@@ -667,13 +667,10 @@ def pemakaian_bahan_add(request):
         pcs_dibutuhkan = int(request.POST['pcs'])
         m3_dibutuhkan = Decimal(request.POST['m3'])
 
-        # Cek kalau bahan gak dipilih
         if not bahan_master_id:
             messages.error(request, "Pilih bahan baku terlebih dahulu!")
             return redirect('pemakaian_bahan_list')
 
-        # 2. Tarik semua stok riwayat barang masuk untuk Master Bahan ini yang masih ada sisanya
-        # Diurutkan dari tanggal masuk paling lama (FIFO)
         stok_tersedia = BahanBakuMasuk.objects.filter(
             bahan_baku_id=bahan_master_id,
             sisa_pcs__gt=0
@@ -843,7 +840,7 @@ def rekap_pemakaian_bahan(request):
         'total_m3': total_m3,
         'total_transaksi': total_transaksi
     }
-    return render(request, 'produksi/rekap_proses_produksi.html', context)
+    return render(request, 'produksi/rekap_pemakaian_bahan.html', context)
 
 
 def hasil_produksi_list(request):
@@ -853,7 +850,6 @@ def hasil_produksi_list(request):
         'quality', 
         'pemakaian_bahan',
     )
-    
     # Ambil parameter pencarian universal dan tanggal
     search_query = request.GET.get('search', '')
     date_from = request.GET.get('date_from')
@@ -889,34 +885,95 @@ def hasil_produksi_list(request):
 
     return render(request, 'produksi/list_hasil_produksi.html', context)
 
+from django.http import JsonResponse
+from django.db.models.functions import Coalesce
+import logging
+logger = logging.getLogger(__name__)
 
 def ajax_bahan_by_proses(request):
     proses_id = request.GET.get('proses_id')
+    if not proses_id:
+        return JsonResponse([], safe=False)
+        
+    try:
+        # KUNCI PERBAIKAN: Pakai 'hasilproduksi__jumlah_pcs' sesuai dengan pilihan field dari log error lo!
+        bahan_tersedia = PemakaianBahanBaku.objects.filter(proses_produksi_id=proses_id) \
+            .annotate(
+                # Menghitung total PCS hasil produksi yang sudah tercatat
+                pcs_terpakai=Coalesce(Sum('hasilproduksi__jumlah_pcs'), 0)
+            ) \
+            .annotate(
+                # Sisa Jatah PCS = Total PCS Pemakaian - PCS yang sudah jadi Hasil Produksi
+                sisa_jatah_pcs=F('jumlah_pcs') - F('pcs_terpakai')
+            ) \
+            .filter(
+                # Hanya tampilkan bahan yang sisa kuantitas PCS-nya masih di atas 0
+                sisa_jatah_pcs__gt=0 
+            ).select_related('bahan_baku_masuk__bahan_baku')
 
-    bahan = PemakaianBahanBaku.objects.filter(
-        proses_produksi_id=proses_id
-    ).values('id', 'bahan_baku_masuk__bahan_baku__nama_bahan')
+        data = []
+        for b in bahan_tersedia:
+            data.append({
+                'id': b.id,
+                'nama_bahan': f"{b.bahan_baku_masuk.bahan_baku.nama_bahan} (Sisa: {b.sisa_jatah_pcs} PCS)"
+            })
 
-    return JsonResponse(list(bahan), safe=False)
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print("--- ERROR LOG BACKEND AJAX ---")
+        print(str(e))
+        print("------------------------------")
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def hasil_produksi_add(request):
     if request.method == 'POST':
+        pemakaian_id = request.POST['pemakaian_bahan']
+        input_pcs = int(request.POST['pcs'])
+        input_m3 = Decimal(request.POST['m3'])
+
+        # 1. Ambil data pemakaian bahan baku sebagai patokan maksimal
+        pemakaian = get_object_or_404(PemakaianBahanBaku, id=pemakaian_id)
+
+        # 2. Hitung total hasil produksi yang SUDAH TERCATAT untuk bahan baku ini
+        hasil_sebelumnya = HasilProduksi.objects.filter(
+            pemakaian_bahan_id=pemakaian_id
+        ).aggregate(
+            total_m3=Sum('jumlah_m3')
+        )
+        
+        # Kalau belum ada hasil produksi sama sekali, set jadi 0
+        total_m3_sebelumnya = hasil_sebelumnya['total_m3'] or Decimal('0.000')
+
+        # 3. LOGIKA VALIDASI (Mencegah Over-Production)
+        total_m3_keseluruhan = total_m3_sebelumnya + input_m3
+
+        # Jika total m3 output melebihi m3 input, tolak simpan datanya!
+        if total_m3_keseluruhan > pemakaian.jumlah_m3:
+            sisa_m3_boleh_diinput = pemakaian.jumlah_m3 - total_m3_sebelumnya
+            pesan_error = f"Gagal! Volume melebihi bahan baku. Sisa bahan yang bisa diolah tinggal {sisa_m3_boleh_diinput} m3."
+            messages.error(request, pesan_error)
+            return redirect('hasil_produksi_list') # Balikin ke halaman list tanpa nyimpen data
+
+        # 4. Jika lolos validasi, baru data disimpan
         HasilProduksi.objects.create(
             tanggal_produksi=datetime.strptime(
                 request.POST['tanggal_produksi'], '%Y-%m-%d'
             ).date(),
             proses_produksi_id=request.POST['proses'],
-            pemakaian_bahan_id=request.POST['pemakaian_bahan'],
+            pemakaian_bahan_id=pemakaian_id,
             nama_hasil_produksi_id=request.POST['nama'],
             tebal=Decimal(request.POST['tebal']),
             lebar=Decimal(request.POST['lebar']),
             panjang=Decimal(request.POST['panjang']),
-            jumlah_pcs=int(request.POST['pcs']),
-            jumlah_m3=Decimal(request.POST['m3']),   # ⬅️ LANGSUNG DARI JS
-            sisa_pcs=int(request.POST['pcs']),
-            sisa_m3=Decimal(request.POST['m3'])
+            jumlah_pcs=input_pcs,
+            jumlah_m3=input_m3,
+            sisa_pcs=input_pcs,
+            sisa_m3=input_m3
         )
+        
+        messages.success(request, "Hasil produksi berhasil ditambahkan!", extra_tags='hasil_produksi')
 
     return redirect('hasil_produksi_list')
 
@@ -924,21 +981,68 @@ def hasil_produksi_edit(request, id):
     hasil = get_object_or_404(HasilProduksi, id=id)
 
     if request.method == 'POST':
+        try:
+            input_pcs = int(request.POST['pcs'])
+            input_m3 = Decimal(request.POST['m3'])
+        except (ValueError, KeyError):
+            messages.error(request, "Gagal! Input data PCS atau M3 tidak valid.")
+            return redirect('hasil_produksi_list')
+
+        # 1️⃣ VALIDASI 1: Pengecekan jika PCS diinput 0 atau minus
+        if input_pcs <= 0:
+            messages.error(request, "Gagal! Jumlah PCS hasil produksi tidak boleh 0 atau minus.")
+            return redirect('hasil_produksi_list')
+
+        # 2️⃣ VALIDASI 2: Mencegah Over-Production Berdasarkan JUMLAH PCS
+        # Hitung total PCS dari hasil produksi lain (kecuali data ini sendiri)
+        hasil_lain = HasilProduksi.objects.filter(
+            pemakaian_bahan_id=hasil.pemakaian_bahan_id
+        ).exclude(
+            id=id
+        ).aggregate(
+            total_pcs=Sum('jumlah_pcs'),
+            total_m3=Sum('jumlah_m3') # Ambil juga m3-nya buat pengaman sekunder
+        )
+        
+        total_pcs_lain = hasil_lain['total_pcs'] or 0
+        total_m3_lain = hasil_lain['total_m3'] or Decimal('0.000')
+
+        # Hitung total akumulasi baru (Data lain + Inputan edit baru)
+        total_pcs_keseluruhan = total_pcs_lain + input_pcs
+        total_m3_keseluruhan = total_m3_lain + input_m3
+
+        # KUNCI VALIDASI UTAMA: Bandingkan PCS Keseluruhan vs PCS Pemakaian Bahan Baku
+        if total_pcs_keseluruhan > hasil.pemakaian_bahan.jumlah_pcs:
+            sisa_pcs_boleh_diinput = hasil.pemakaian_bahan.jumlah_pcs - total_pcs_lain
+            messages.error(request, f"Gagal! Jumlah PCS melebihi batas pemakaian bahan. Sisa jatah maksimal yang bisa diinput tinggal {sisa_pcs_boleh_diinput} PCS.")
+            return redirect('hasil_produksi_list')
+
+        # KUNCI VALIDASI SEKUNDER: Jaga-jaga kalau volume m3-nya yang melesat melewati batas
+        if total_m3_keseluruhan > hasil.pemakaian_bahan.jumlah_m3:
+            sisa_m3_boleh_diinput = hasil.pemakaian_bahan.jumlah_m3 - total_m3_lain
+            sisa_bersih = round(sisa_m3_boleh_diinput, 4)
+            messages.error(request, f"Gagal! Volume M³ melebihi batas bahan baku. Sisa jatah volume tinggal {sisa_bersih} m3.")
+            return redirect('hasil_produksi_list')
+
+        # 3️⃣ Eksekusi Update jika lolos uji pertahanan berlapis
         hasil.nama_hasil_produksi_id = request.POST['nama']
-        hasil.tebal = request.POST['tebal']
-        hasil.lebar = request.POST['lebar']
-        hasil.panjang = request.POST['panjang']
-        hasil.jumlah_pcs = int(request.POST['pcs'])
-        hasil.jumlah_m3 = Decimal(request.POST['m3'])
-        hasil.sisa_pcs = hasil.jumlah_pcs
-        hasil.sisa_m3 = hasil.jumlah_m3
+        hasil.tebal = Decimal(request.POST['tebal'])
+        hasil.lebar = Decimal(request.POST['lebar'])
+        hasil.panjang = Decimal(request.POST['panjang'])
+        hasil.jumlah_pcs = input_pcs
+        hasil.jumlah_m3 = input_m3
+        hasil.sisa_pcs = input_pcs  
+        hasil.sisa_m3 = input_m3    
         hasil.save()
+    
+        messages.success(request, "Hasil produksi berhasil diupdate!", extra_tags='hasil_produksi')
 
     return redirect('hasil_produksi_list')
 
-
 def hasil_produksi_delete(request, id):
     get_object_or_404(HasilProduksi, id=id).delete()
+    
+    messages.success(request, "Hasil produksi berhasil dihapus!", extra_tags='hasil_produksi')
     return redirect('hasil_produksi_list')
 
 def rekap_hasil_produksi(request):

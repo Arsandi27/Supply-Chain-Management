@@ -1,7 +1,6 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
@@ -61,7 +60,8 @@
         /* Base style untuk semua tombol di area filter */
         .btn-filter,
         .btn-reset,
-        .btn-export {
+        .btn-export,
+        .btn-print {
             padding: 6px 12px;
             border-radius: 4px;
             font-family: inherit;
@@ -93,6 +93,16 @@
             background-color: #f0fdf4;
         }
 
+        .btn-print {
+            border-color: #a31616;
+            color: #a31616;
+            background-color: #fff;
+        }
+
+        .btn-print:hover {
+            background-color: #fee2e2;
+        }
+
         /* --- TABLE (Tampilan Melengkung & Bergaris Sesuai Gambar) --- */
         table {
             width: 100%;
@@ -108,6 +118,7 @@
         thead {
             background-color: #191970;
             color: #ffffff;
+            border-bottom: 3px solid #F4C542;
         }
 
         th {
@@ -120,6 +131,7 @@
             font-size: 12px;
             letter-spacing: 0.05em;
             border-right: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 3px solid #F4C542;
         }
 
         th:last-child {
@@ -200,7 +212,6 @@
             white-space: nowrap;
         }
 
-        /* Styling Khusus Tombol Tambah (Biru Tua) */
         .btn-tambah {
             padding: 7px 14px;
             border-radius: 4px;
@@ -209,14 +220,14 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            background-color: #191970;
+            background-color: #191970;;
             /* Tema Biru Tua */
             color: #ffffff;
             border: 1px solid #191970;
         }
 
         .btn-tambah:hover {
-            background-color: #121254;
+            background-color: #F4C542;
         }
 
 
@@ -239,12 +250,12 @@
 
         /* Tombol Edit - Midnight Blue */
         .btn-edit {
-            background-color: #191970;
+            background-color: #191970;;
             color: #ffffff;
         }
 
         .btn-edit:hover {
-            background-color: #2a2a8a;
+            background-color: #F4C542;
             transform: translateY(-1px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }

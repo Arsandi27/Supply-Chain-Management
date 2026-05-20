@@ -1,16 +1,17 @@
 .sidebar {
     width: 256px;
-    height: 100vh;
+    height: calc(100vh - 20px);
     background: #0d0d5a;
     position: fixed;
-    left: 0;
-    top: 0;
+    left: 10px;
+    top: 10px;
     color: #fff;
     padding: 20px;
+    border-radius: 16px;
 }
 .content {
-    padding: 5px;
-
+    margin-left: 265px; /* > sidebar width */
+    padding: 20px;
 }
 .sidebar-title {
     font-size: 18px;

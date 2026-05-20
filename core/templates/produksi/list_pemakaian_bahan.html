@@ -5,24 +5,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proses Produksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Pemakaian Bahan</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_produksi.html' %}
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
     <div class="content">
-        <h2>Proses Produksi</h2>
-        <div class="filter-container">
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Pemakaian Bahan</h2>
+        <div class="filter-container" style="margin-bottom: 20px;">
             <button class="btn-action btn-tambah" onclick="openAdd()">+ Tambah</button>
             <form method="get" class="filter-form">
             <input type="text" name="bahan" placeholder="Cari Nama Bahan" value="{{ nama_bahan|default:'' }}">
 
-            <label>Dari Tanggal:</label>
+            <label>Dari</label>
             <input type="date" name="tanggal_mulai" value="{{ tanggal_mulai|default:'' }}">
 
-            <label>Sampai Tanggal:</label>
+            <label>Sampai</label>
             <input type="date" name="tanggal_selesai" value="{{ tanggal_selesai|default:'' }}">
 
             <button type="submit" class="btn-filter">Filter</button>
@@ -59,6 +61,7 @@
             {% endfor %}
         </table>
     </div>
+    </main>
 <!-- ================= MODAL TAMBAH PEMAKAIAN BAHAN ================= -->
     <div class="modal" id="addModal">
         <div class="modal-content">
