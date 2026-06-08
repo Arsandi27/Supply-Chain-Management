@@ -1,4 +1,5 @@
 {% load rupiah %}
+{%load static%}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -6,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Purchasing</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -53,7 +55,7 @@
             <!-- Header Section -->
             <div class="flex justify-between items-end mb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-[#191970]">Dashboard Purchasing</h2>
+                    <h2 class="text-2xl font-bold text-[#0D0D5A] border-l-4 border-[#F4C542] pl-4 tracking-tight">Dashboard Purchasing</h2>
                     <p class="text-sm text-gray-500 mt-1">Visibilitas stok bahan baku dan aktivitas pemasok.</p>
                 </div>
             </div>
@@ -61,8 +63,7 @@
             <!-- 3 Stats Cards (Dinamis dari Context) -->
             <div class="grid grid-cols-3 gap-5 mb-6">
                 <!-- Card 1 -->
-                <div
-                    class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TOTAL STOK BAHAN
@@ -70,7 +71,7 @@
                             <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_bahan_baku }} pcs</h3>
                             <p class="text-xs text-gray-500 mt-1">Tersedia di Gudang</p>
                         </div>
-                        <div class="p-2 bg-[#191970] text-white rounded-lg">
+                        <div class="p-2 bg-[#F4C542] text-[#0D0D5A] rounded-lg">
                             <!-- SVG Box -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
@@ -82,15 +83,14 @@
                 </div>
 
                 <!-- Card 2 -->
-                <div
-                    class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">PEMASOK AKTIF</p>
                             <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ pemasok_aktif }}</h3>
                             <p class="text-xs text-gray-500 mt-1">Total Pemasok</p>
                         </div>
-                        <div class="p-2 bg-[#191970]/10 text-[#191970] rounded-lg">
+                        <div class="p-2 bg-[#F4C542]/20 text-[#0D0D5A] rounded-lg">
                             <!-- SVG Users -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
@@ -103,7 +103,7 @@
 
                 <!-- Card 3 -->
                 <div
-                    class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                    class="bg-white p-5 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">NILAI PEMBELIAN
@@ -112,7 +112,7 @@
                             <p class="text-xs text-gray-500 mt-1">Total 1 Bulan</p>
                         </div>
                         <div
-                            class="p-2 bg-[#191970]/10 text-[#191970] rounded-lg cursor-pointer hover:bg-[#191970]/20 transition">
+                            class="p-2 bg-[#F4C542]/20 text-[#0D0D5A] rounded-lg cursor-pointer hover:bg-[#191970]/20 transition">
                             <!-- SVG Wallet/Money -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
@@ -127,8 +127,7 @@
             <!-- Middle Section: Chart & Sidebar Data -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
                 <!-- Bar Chart (Lebar 2 Kolom) -->
-                <div
-                    class="col-span-1 lg:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                <div class="col-span-1 lg:col-span-2 bg-white p-6 rounded-xl border border-gray-200 border-t-4 border-t-[#F4C542] shadow-sm flex flex-col">
                     <h3 class="text-lg font-bold text-gray-900">Stok Bahan Baku</h3>
                     <p class="text-sm text-gray-500 mb-4">Akumulasi jumlah stok masuk (6 bulan terakhir).</p>
                     <div class="relative flex-1 w-full min-h-[250px]">
@@ -177,13 +176,13 @@
                     {% endif %}
 
                     <!-- Pemasok Terbaru -->
-                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex-1">
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 border-t-4 border-t-[#F4C542] shadow-sm flex-1">
                         <h3 class="text-sm font-bold text-gray-900 mb-4">Pemasok Terbaru</h3>
                         <div class="space-y-4">
                             {% for pemasok in pemasok_terbaru %}
                             <div class="flex items-center">
                                 <div
-                                    class="w-10 h-10 rounded-full bg-[#191970]/10 text-[#191970] flex items-center justify-center font-bold text-sm mr-3 shrink-0">
+                                    class="w-10 h-10 rounded-full bg-[#F4C542]/20 text-[#0D0D5A] flex items-center justify-center font-bold text-sm mr-3 shrink-0">
                                     {{ pemasok.nama_supplier|make_list|first|upper }}
                                 </div>
                                 <div class="overflow-hidden">
@@ -201,7 +200,7 @@
             </div>
 
             <!-- Table Section (Dinamis dari Context 'terbaru') -->
-            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <div class="bg-white p-6 rounded-xl border border-gray-200 border-t-4 border-t-[#F4C542] shadow-sm">
                 <div class="flex justify-between items-center mb-4">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900">Rekap Stok Bahan Baku Terbaru</h3>
@@ -247,86 +246,111 @@
     <!-- Script for Chart.js Initialization -->
 
 </body>
-    <script>
-        // Memastikan script jalan setelah seluruh elemen HTML selesai dimuat
-        document.addEventListener("DOMContentLoaded", function () {
-            const canvas = document.getElementById('stokChart');
-            if (!canvas) return;
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById('stokChart');
+        if (!canvas) return;
 
-            const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
 
-            // Data dari Django
-            const labels = [
-                {% for data in grafik_data %}
-                "{{ data.bahan_baku__nama_bahan|escapejs }}"{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            ];
+        // Gradient biru elegan
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, '#1E1B8F');
+        gradient.addColorStop(1, '#0D0D5A');
 
-            // PERBAIKAN: Spasi di kurung kurawal dihapus menjadi {{ ... }}
-            const dataValues = [
-                {% for data in grafik_data %}
-                {{data.total_stok|default:0}}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            ];
+        // Data dari Django
+        const labels = [
+            {% for data in grafik_data %}
+            "{{ data.bahan_baku__nama_bahan|escapejs }}"{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ];
 
-            // Jika data kosong, tampilkan log di console untuk debug
-            if (dataValues.length === 0) {
-                console.warn("Data chart kosong, periksa context 'grafik_data' di views.py");
-            }
+        const dataValues = [
+            {% for data in grafik_data %}
+            {{data.total_stok|default:0}}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ];
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Masuk (pcs)',
-                        data: dataValues,
-                        backgroundColor: '#191970',
-                        borderRadius: 6,
-                        barPercentage: 0.6
-                    }]
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Masuk (pcs)',
+                    data: dataValues,
+                    backgroundColor: gradient,
+                    borderRadius: 5,
+                    borderSkipped: false,
+                    hoverBackgroundColor: '#F4C542',
+                    barThickness: 55
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                // Animasi smooth naik
+            animations: {
+                y: {
+                    easing: 'easeOutQuart',
+                    duration: 1000,
+                    from: 500,
+                    delay: (ctx) => ctx.dataIndex * 180
+                }
+            },
+
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        backgroundColor: '#0D0D5A',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#F4C542',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 10,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw.toLocaleString() + ' pcs';
+                            }
+                        }
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    // --- ANIMASI TINGKAT LANJUT ---
-                    animations: {
-                        y: {
-                            easing: 'easeOutQuart',
-                            duration: 2000,
-                            from: (ctx) => ctx.chart.scales.y.getPixelForValue(0), // Mulai dari dasar grafik
-                            delay: (ctx) => ctx.dataIndex * 150 // Efek staggered (muncul satu-satu)
-                        }
-                    },
-                    // ------------------------------
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(25, 25, 112, 0.9)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            padding: 12
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0,
-                                color: '#64748b'
-                            },
-                            grid: {
-                                borderDash: [5, 5],
-                                color: '#e2e8f0',
-                                drawBorder: false
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#64748b',
+                            font: {
+                                size: 12
                             }
                         },
-                        x: {
-                            ticks: { color: '#64748b' },
-                            grid: { display: false }
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.15)',
+                            drawBorder: false
+                        }
+                    },
+
+                    x: {
+                        ticks: {
+                            color: '#475569',
+                            font: {
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
                         }
                     }
                 }
-            });
+            }
         });
-    </script>
+    });
+</script>
 </html> 

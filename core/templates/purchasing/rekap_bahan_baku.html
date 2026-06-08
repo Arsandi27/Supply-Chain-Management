@@ -1,79 +1,84 @@
 {% load static %}
+{% load rupiah%}
 <!DOCTYPE html>
 <html>
 
 <head>
     <title>Rekap Bahan Baku Masuk</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
     <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_purchasing.html' %}
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
-    <div class="content">
-        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Rekap Bahan Baku Masuk</h2>
-        <div class="filter-container">
-            <form method="get" class="filter-form" style="margin-bottom: 20px ;">
-                Dari Tanggal :
-                <input type="date" name="start" value="{{ request.GET.start }}">
+        <div class="content">
+            <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Laporan Data Bahan Baku Masuk</h2>
+            <div class="filter-container">
+                <form method="get" class="filter-form" style="margin-bottom: 20px ;">
+                    Dari Tanggal :
+                    <input type="date" name="start" value="{{ request.GET.start }}">
 
-                Sampai Tanggal :
-                <input type="date" name="end" value="{{ request.GET.end }}">
+                    Sampai Tanggal :
+                    <input type="date" name="end" value="{{ request.GET.end }}">
 
-                <button type="submit" class="btn-filter">Filter</button>
-                <a href="{% url 'rekap_bahan_baku' %}" class="btn-reset">Reset</a>
-                <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
-                <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
-            </form>
+                    <button type="submit" class="btn-filter">Filter</button>
+                    <a href="{% url 'rekap_bahan_baku' %}" class="btn-reset">Reset</a>
+                    <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
+                    <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
+                </form>
+            </div>
+            <table id="rekapTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal</th>
+                        <th>Nama Supplier</th>
+                        <th>Nama Bahan Baku</th>
+                        <th>Jumlah PCS</th>
+                        <th>Jumlah M³</th>
+                        <th>Harga</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for d in data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ d.tanggal_masuk |date:"d F Y" }}</td>
+                        <td>{{ d.supplier }}</td>
+                        <td>{{ d.bahan_baku }}</td>
+                        <td>{{ d.jumlah_pcs }}</td>
+                        <td>{{ d.jumlah_m3 | floatformat:3 }}</td>
+                        <td>{{ d.harga_satuan | rupiah }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">Data tidak ditemukan</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+                <tfoot>
+                    <tr class="total-row">
+                        <th colspan="4">TOTAL</th>
+                        <th>{{ total_pcs }}</th>
+                        <th>{{ total_m3|floatformat:3 }}</th>
+                        <th>{{ total_harga|rupiah }}</th>
+                    </tr>
+                    <tr class="total-row">
+                        <th colspan="4">JUMLAH TRANSAKSI</th>
+                        <th colspan="3">{{ total_transaksi }}</th>
+                    </tr>
+
+                </tfoot>
+            </table>
         </div>
-
-        <!-- ================= TABLE ================= -->
-        <table id="rekapTable">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Nama Supplier</th>
-                    <th>Nama Bahan Baku</th>
-                    <th>Jumlah PCS</th>
-                    <th>Jumlah M³</th>
-                    <th>Jumlah Transaksi</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for d in data %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ d.tanggal_masuk |date:"d F Y" }}</td>
-                    <td>{{ d.supplier }}</td>
-                    <td>{{ d.bahan_baku }}</td>
-                    <td>{{ d.jumlah_pcs }}</td>
-                    <td>{{ d.jumlah_m3 | floatformat:3 }}</td>
-                    <td>1</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7">Data tidak ditemukan</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-            <!-- ================= TOTAL ================= -->
-            <tfoot>
-                <tr class="total-row">
-                    <td colspan="4">TOTAL</td>
-                    <td>{{ total_pcs }}</td>
-                    <td>{{ total_m3 }}</td>
-                    <td>{{ total_transaksi }}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
     </main>
     <!-- ================= EXPORT EXCEL ================= -->
     <script>
@@ -88,6 +93,134 @@
             const today = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `rekap_bahan_baku_${today}.xlsx`);
         }
+    async function printPDF() {
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    // ===== HEADER =====
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("LAPORAN DATA BAHAN BAKU MASUK", 105, 15, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+
+    // Mengambil nilai variabel filter dari Django template request
+    const start = "{{ request.GET.start|default:'-' }}";
+    const end = "{{ request.GET.end|default:'-' }}";
+
+    doc.text(`Periode: ${start} s/d ${end}`, 105, 22, { align: "center" });
+
+    // ===== AMBIL DATA TABLE HTML =====
+    const rows = [];
+
+    document.querySelectorAll("#rekapTable tbody tr").forEach((tr) => {
+        const row = [];
+
+        tr.querySelectorAll("td").forEach((td) => {
+            row.push(td.innerText.trim());
+        });
+
+        // Memastikan tidak memasukkan baris "Data tidak ditemukan" ke dalam tabel PDF
+        if (row.length > 0 && row[0] !== "Data tidak ditemukan") {
+            rows.push(row);
+        }
+    });
+
+    // ===== TABLE =====
+    doc.autoTable({
+        startY: 30,
+        theme: 'grid', 
+        head: [[
+            "No",
+            "Tanggal",
+            "Nama Supplier",
+            "Nama Bahan Baku",
+            "Jumlah PCS",
+            "Jumlah M³",
+            "Harga"
+        ]],
+        body: rows,
+        foot: [[
+            { content: 'TOTAL', colSpan: 4, styles: { halign: 'center' } },
+            "{{ total_pcs }}",
+            "{{ total_m3|floatformat:3 }}",
+            "{{ total_harga|rupiah }}"
+        ]],
+        styles: {
+            fontSize: 9,
+            cellPadding: 3,
+            textColor: [0, 0, 0],
+            lineWidth: 0.1,         // Garis pembatas merata ke seluruh sel tabel
+            lineColor: [180, 180, 180] 
+        },
+        headStyles: {
+            fillColor: [211, 211, 211], // Warna abu-abu solid untuk thead
+            textColor: [0, 0, 0],
+            halign: 'center',
+            fontStyle: 'bold',
+            lineWidth: 0.1,         // Menjaga garis vertikal header tetap tersambung
+            lineColor: [180, 180, 180]
+        },
+        bodyStyles: {
+            valign: 'middle'
+        },
+        footStyles: {
+            fillColor: [211, 211, 211], // Warna abu-abu solid untuk tfoot
+            textColor: [0, 0, 0],
+            fontStyle: 'bold',
+            lineWidth: 0.1,         // Menjaga garis vertikal footer tetap lurus ke bawah
+            lineColor: [180, 180, 180]
+        },
+        columnStyles: {
+            0: { halign: 'center', cellWidth: 10 },
+            1: { halign: 'center' },
+            4: { halign: 'center' },
+            5: { halign: 'center' },
+            6: { halign: 'right' }
+        }
+    });
+
+    // ===== TOTAL RINCIAN (DIPISAH DI BAWAH TABEL) =====
+    let finalY = doc.lastAutoTable.finalY + 10;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+
+    doc.text(
+        `TOTAL PCS : {{ total_pcs }}`,
+        14,
+        finalY
+    );
+
+    doc.text(
+        `TOTAL M3 : {{ total_m3|floatformat:3 }}`,
+        14,
+        finalY + 7
+    );
+
+    doc.text(
+        `TOTAL HARGA : {{ total_harga|rupiah }}`,
+        14,
+        finalY + 14
+    );
+
+    doc.text(
+        `JUMLAH TRANSAKSI : {{ total_transaksi }}`,
+        14,
+        finalY + 21
+    );
+
+    // ===== TANDA TANGAN =====
+    const today = new Date().toLocaleDateString('id-ID');
+
+    doc.setFont("helvetica", "normal");
+
+    // ===== SAVE PDF =====
+    const todayFile = new Date().toISOString().slice(0, 10);
+    doc.save(`rekap_bahan_baku_${todayFile}.pdf`);
+}
     </script>
 
 </body>

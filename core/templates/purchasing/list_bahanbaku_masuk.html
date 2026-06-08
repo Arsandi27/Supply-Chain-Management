@@ -5,6 +5,7 @@
 
 <head>
     <title>Bahan Baku Masuk</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -12,6 +13,7 @@
 </head>
 
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    {% include 'partials/message_popup.html' with page_tag='bahan_baku_masuk' %}
     {% include 'parts/sidebar_purchasing.html' %}
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
         <div class="content">
@@ -69,8 +71,8 @@
             '{{ d.supplier.id }}',
             '{{ d.tanggal_masuk|date:'Y-m-d' }}',
             '{{ d.jumlah_pcs }}',
-            '{{ d.jumlah_m3 }}',
-            '{{ d.harga_satuan }}'
+            '{{ d.jumlah_m3 |floatformat:3  }}',
+            '{{ d.harga_satuan |floatformat:0  }}'
         )">
                             Edit
                         </button>
@@ -278,8 +280,7 @@
         XLSX.utils.book_append_sheet(wb, ws, "Bahan Baku Masuk");
         XLSX.writeFile(wb, "bahan_baku_masuk.xlsx");
     }
-</script>
-<script>
+
     const display = document.getElementById('harga_satuan_display');
     const hidden = document.getElementById('harga_satuan');
 

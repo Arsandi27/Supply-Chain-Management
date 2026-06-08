@@ -1,4 +1,4 @@
-
+{%load static%}
 {% load rupiah %}
 <!DOCTYPE html>
 <html lang="id">
@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Penjualan</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -53,7 +54,7 @@
             <!-- Header Section -->
             <div class="flex justify-between items-end mb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-[#191970]">Dashboard Penjualan</h2>
+                    <h2 class="text-2xl font-bold text-[#0D0D5A] border-l-4 border-[#F4C542] pl-4 tracking-tight">Dashboard Produksi</h2>
                     <p class="text-sm text-gray-500 mt-1">Pantau transaksi dan omset penjualan Anda.</p>
                 </div>
             </div>
@@ -61,14 +62,14 @@
             <!-- 3 Stats Cards -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
                 <!-- Card 1: Total Transaksi -->
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TOTAL TRANSAKSI (6 BLN)</p>
                             <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_transaksi }}</h3>
                             <p class="text-xs text-gray-500 mt-1">Transaksi Berhasil</p>
                         </div>
-                        <div class="p-2 bg-[#191970] text-white rounded-lg">
+                        <div class="p-2 bg-[#F4C542] text-[#0D0D5A] rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                             </svg>
@@ -77,14 +78,14 @@
                 </div>
 
                 <!-- Card 2: Total Omset -->
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TOTAL OMSET (6 BLN)</p>
                             <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_omset|rupiah }}</h3>
                             <p class="text-xs text-gray-500 mt-1">Pendapatan Kotor</p>
                         </div>
-                        <div class="p-2 bg-[#191970]/10 text-[#191970] rounded-lg">
+                        <div class="p-2 bg-[#F4C542]/20 text-[#0D0D5A] rounded-lg">
                             <!-- SVG Wallet / Money -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -94,14 +95,14 @@
                 </div>
 
                 <!-- Card 3: Total Produk Terjual -->
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TOTAL PRODUK TERJUAL</p>
                             <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_pcs }} PCS</h3>
                             <p class="text-xs font-medium text-[#191970] mt-1">{{ total_m3|floatformat:3 }} M³</p>
                         </div>
-                        <div class="p-2 bg-[#191970]/10 text-[#191970] rounded-lg">
+                        <div class="p-2 bg-[#F4C542]/20 text-[#0D0D5A] rounded-lg">
                             <!-- SVG Cube / Box -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                               <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
@@ -115,7 +116,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
                 
                 <!-- Chart Transaksi -->
-                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm">
                     <h3 class="text-lg font-bold text-gray-900">Grafik Jumlah Transaksi</h3>
                     <p class="text-sm text-gray-500 mb-4">Tren jumlah transaksi 6 bulan terakhir.</p>
                     <div class="relative flex-1 w-full min-h-[300px]">
@@ -124,7 +125,7 @@
                 </div>
 
                 <!-- Chart Omset -->
-                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm flex flex-col">
                     <h3 class="text-lg font-bold text-gray-900">Grafik Total Omset</h3>
                     <p class="text-sm text-gray-500 mb-4">Tren pendapatan kotor 6 bulan terakhir.</p>
                     <div class="relative flex-1 w-full min-h-[300px]">
@@ -135,7 +136,7 @@
             </div>
 
             <!-- Table Section -->
-            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+           <div class="bg-white p-6 rounded-2xl border border-gray-100 border-t-4 border-t-[#F4C542] shadow-sm">
                 <div class="flex justify-between items-center mb-4">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900">Penjualan Terakhir</h3>
@@ -172,135 +173,264 @@
 
         </div>
     </main>
-<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. Data dari Context Django
-            const labels = [
-                {% for d in grafik_penjualan %}'{{ d.bulan|date:"M Y" }}',{% endfor %}
-            ];
-            const transaksi = [
-                {% for d in grafik_penjualan %}{{ d.transaksi|default:0 }},{% endfor %}
-            ];
-            const omset = [
-                {% for d in grafik_penjualan %}{{ d.omset|default:0 }},{% endfor %}
-            ];
 
-            // Fungsi helper untuk konfigurasi animasi agar konsisten
-            const chartAnimation = {
-                y: {
-                    easing: 'easeOutQuart',
-                    duration: 1500,
-                    from: (ctx) => ctx.chart.scales.y.getPixelForValue(0),
-                    delay: (ctx) => ctx.dataIndex * 100 // Muncul bertahap dari kiri ke kanan
-                }
-            };
-
-            // 2. Inisialisasi Chart Transaksi
-            const ctxTrx = document.getElementById('grafikTransaksi');
-            if (ctxTrx) {
-                new Chart(ctxTrx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Jumlah Transaksi',
-                            data: transaksi,
-                            borderColor: '#3B82C6',
-                            backgroundColor: 'rgba(59, 130, 198, 0.2)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#3B82C6',
-                            pointBorderWidth: 2
-                        }]
-                    },
-                    options: {
-                        animations: chartAnimation, // Gunakan animasi Y
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(59, 130, 198, 0.9)',
-                                padding: 12,
-                                callbacks: {
-                                    label: function(context) { return ' ' + context.raw + ' Transaksi'; }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: { grid: { display: false } },
-                            y: {
-                                beginAtZero: true,
-                                grid: { borderDash: [4, 4], color: '#e2e8f0' },
-                                ticks: { precision: 0 }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // 3. Inisialisasi Chart Omset
-            const ctxOmset = document.getElementById('grafikOmset');
-            if (ctxOmset) {
-                new Chart(ctxOmset, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Total Omset',
-                            data: omset,
-                            borderColor: '#191970',
-                            backgroundColor: 'rgba(25, 25, 112, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#191970',
-                            pointBorderWidth: 2
-                        }]
-                    },
-                    options: {
-                        animations: chartAnimation, // Gunakan animasi Y
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(25, 25, 112, 0.9)',
-                                padding: 12,
-                                callbacks: {
-                                    label: function(context) {
-                                        return ' ' + new Intl.NumberFormat('id-ID', {
-                                            style: 'currency',
-                                            currency: 'IDR',
-                                            maximumFractionDigits: 0
-                                        }).format(context.raw);
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: { grid: { display: false } },
-                            y: {
-                                beginAtZero: true,
-                                grid: { borderDash: [4, 4], color: '#e2e8f0' },
-                                ticks: {
-                                    callback: function(value) {
-                                        if (value >= 1000000) return 'Rp ' + (value / 1000000) + ' Jt';
-                                        return value;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    </script>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
+        // =========================
+        // DATA DARI DJANGO
+        // =========================
+        const labels = [
+            {% for d in grafik_penjualan %}
+            '{{ d.bulan|date:"M Y" }}',
+            {% endfor %}
+        ];
+
+        const transaksi = [
+            {% for d in grafik_penjualan %}
+            {{ d.transaksi|default:0 }},
+            {% endfor %}
+        ];
+
+        const omset = [
+            {% for d in grafik_penjualan %}
+            {{ d.omset|default:0 }},
+            {% endfor %}
+        ];
+
+        // =========================
+        // ANIMASI GLOBAL
+        // =========================
+        const chartAnimation = {
+            y: {
+                easing: 'easeOutQuart',
+                duration: 1800,
+                from: 500,
+                delay: (ctx) => ctx.dataIndex * 120
+            }
+        };
+
+        // =========================
+        // CHART TRANSAKSI
+        // =========================
+        const ctxTrx = document.getElementById('grafikTransaksi');
+
+        if (ctxTrx) {
+
+            const gradientTrx = ctxTrx
+                .getContext('2d')
+                .createLinearGradient(0, 0, 0, 350);
+
+            gradientTrx.addColorStop(0, 'rgba(244, 197, 66, 0.35)');
+            gradientTrx.addColorStop(1, 'rgba(244, 197, 66, 0.02)');
+
+            new Chart(ctxTrx, {
+                type: 'line',
+
+                data: {
+                    labels: labels,
+
+                    datasets: [{
+                        label: 'Jumlah Transaksi',
+                        data: transaksi,
+
+                        borderColor: '#F4C542',
+                        backgroundColor: gradientTrx,
+
+                        borderWidth: 3,
+                        tension: 0.45,
+                        fill: true,
+
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#F4C542',
+                        pointBorderWidth: 3
+                    }]
+                },
+
+                options: {
+                    animations: chartAnimation,
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            backgroundColor: '#0D0D5A',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#F4C542',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10,
+
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.raw + ' Transaksi';
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    weight: '600'
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            }
+                        },
+
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0,
+                                color: '#64748b'
+                            },
+
+                            grid: {
+                                borderDash: [5, 5],
+                                color: 'rgba(148,163,184,0.18)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // =========================
+        // CHART OMSET
+        // =========================
+        const ctxOmset = document.getElementById('grafikOmset');
+
+        if (ctxOmset) {
+
+            const gradientOmset = ctxOmset
+                .getContext('2d')
+                .createLinearGradient(0, 0, 0, 350);
+
+            gradientOmset.addColorStop(0, 'rgba(13, 13, 90, 0.28)');
+            gradientOmset.addColorStop(1, 'rgba(13, 13, 90, 0.03)');
+
+            new Chart(ctxOmset, {
+                type: 'line',
+
+                data: {
+                    labels: labels,
+
+                    datasets: [{
+                        label: 'Total Omset',
+                        data: omset,
+
+                        borderColor: '#0D0D5A',
+                        backgroundColor: gradientOmset,
+
+                        borderWidth: 3,
+                        tension: 0.45,
+                        fill: true,
+
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#0D0D5A',
+                        pointBorderWidth: 3
+                    }]
+                },
+
+                options: {
+                    animations: chartAnimation,
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            backgroundColor: '#0D0D5A',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#F4C542',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10,
+
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + new Intl.NumberFormat('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                        maximumFractionDigits: 0
+                                    }).format(context.raw);
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    weight: '600'
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            }
+                        },
+
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                color: '#64748b',
+
+                                callback: function(value) {
+                                    if (value >= 1000000) {
+                                        return 'Rp ' + (value / 1000000) + ' Jt';
+                                    }
+
+                                    return value;
+                                }
+                            },
+
+                            grid: {
+                                borderDash: [5, 5],
+                                color: 'rgba(148,163,184,0.18)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 </html>

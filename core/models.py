@@ -53,10 +53,10 @@ class BahanBakuMasuk(models.Model):
     tanggal_masuk = models.DateField(default=timezone.now)
 
     jumlah_pcs = models.PositiveIntegerField(default=0)
-    jumlah_m3 = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    jumlah_m3 = models.DecimalField(max_digits=10, decimal_places=3, default=0)
 
     sisa_pcs = models.PositiveIntegerField(default=0)
-    sisa_m3 = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    sisa_m3 = models.DecimalField(max_digits=10, decimal_places=3, default=0)
 
     harga_satuan = models.DecimalField(max_digits=15, decimal_places=2)
 
@@ -92,7 +92,7 @@ class PemakaianBahanBaku(models.Model):
     proses_produksi = models.ForeignKey(ProsesProduksi, on_delete=models.CASCADE)
     bahan_baku_masuk = models.ForeignKey(BahanBakuMasuk, on_delete=models.CASCADE)
     jumlah_pcs = models.PositiveIntegerField(default=0)
-    jumlah_m3 = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    jumlah_m3 = models.DecimalField(max_digits=10, decimal_places=3, default=0)
 
 
 
@@ -135,10 +135,6 @@ class HasilProduksi(models.Model):
     def __str__(self):
         return f"Hasil Produksi {self.id} - {self.nama_hasil_produksi }"
 
-
-from django.db import models
-from django.utils import timezone
-
 class Penjualan(models.Model):
     
     hasil_produksi = models.ForeignKey(
@@ -154,7 +150,7 @@ class Penjualan(models.Model):
 
     tanggal_penjualan = models.DateField()
     pcs = models.PositiveIntegerField(default=0)
-    m3 = models.DecimalField(max_digits=10, decimal_places=4, default=0)
+    m3 = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     
     total_harga = models.DecimalField(
         max_digits=15,
@@ -168,7 +164,6 @@ class Penjualan(models.Model):
     
 
 class QualityControl(models.Model):
-
     hasil_produksi = models.OneToOneField(
         HasilProduksi,
         on_delete=models.CASCADE,

@@ -4,19 +4,19 @@
 
 <head>
     <title>Data Quality</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/qc.css' %}">
 </head>
 
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_qc.html' %}
-    <main class="flex-1 h-full overflow-y-auto p-6" style="margin-left: 256px;">
+    <main class="flex-1 h-full overflow-y-auto p-6">
         <div class="content">
-            <h2 class="text-2xl font-bold mb-4">Data Quality</h2>
-            <button class="btn-action btn-tambah" onclick="openAddModal()">+ Tambah Quality</button>
+            <h2 class="text-2xl font-bold mb-4">Data Nama Quality</h2>
+            <button class="btn-tambah" onclick="openAddModal()">+ Tambah Quality</button>
 
             <br><br>
-
             <table>
                 <tr>
                     <th>No</th>
@@ -47,7 +47,7 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label>Nama Quality / Grade</label>
-                    <input type="text" name="quality" placeholder="Contoh: Grade A, Lulus QC..." required>
+                    <input type="text" name="quality" placeholder="Contoh: Grade A..." required>
                 </div>
 
                 <div class="modal-actions">

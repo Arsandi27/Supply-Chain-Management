@@ -1,9 +1,11 @@
+{%load static%}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Produksi</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -205,154 +207,361 @@
 
         </div>
     </main>
-<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Konfigurasi Animasi Global (Gelombang dari kiri ke kanan)
-            const animationDelay = (ctx) => ctx.dataIndex * 150;
-            const commonAnimations = {
-                y: {
-                    easing: 'easeOutQuart',
-                    duration: 1500,
-                    from: (ctx) => ctx.chart.scales.y_pcs.getPixelForValue(0), // Start dari dasar sumbu PCS
-                    delay: animationDelay
-                }
-            };
 
-            // 1. DATA PEMAKAIAN BAHAN (LINE CHART)
-            const pemakaianLabels = [
-                {% for d in pemakaian_6_bulan %}'{{d.bulan|date:"M Y"}}', {% endfor %}
-            ];
-            const pemakaianPCS = [
-                {% for d in pemakaian_6_bulan %}{{ d.total_pcs|default:0|stringformat:"f" }}, {% endfor %}
-            ];
-            const pemakaianM3 = [
-                {% for d in pemakaian_6_bulan %}{{ d.total_m3|default:0|stringformat:"f" }}, {% endfor %}
-            ];
-
-            const ctxPemakaian = document.getElementById('grafikPemakaian');
-            if (ctxPemakaian) {
-                new Chart(ctxPemakaian, {
-                    type: 'line',
-                    data: {
-                        labels: pemakaianLabels,
-                        datasets: [
-                            {
-                                label: 'Total PCS',
-                                data: pemakaianPCS,
-                                borderColor: '#F4C542',
-                                backgroundColor: 'rgba(244, 197, 66, 0.15)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                yAxisID: 'y_pcs'
-                            },
-                            {
-                                label: 'Total M3',
-                                data: pemakaianM3,
-                                borderColor: '#191970',
-                                backgroundColor: 'rgba(59, 130, 198, 0.1)',
-                                borderWidth: 2,
-                                borderDash: [5, 5],
-                                tension: 0.4,
-                                yAxisID: 'y_m3'
-                            }
-                        ]
-                    },
-                    options: {
-                        animations: commonAnimations, // Efek gerak naik
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false },
-                        plugins: {
-                            legend: { labels: { font: { family: "'Inter', sans-serif" } } }
-                        },
-                        scales: {
-                            y_pcs: {
-                                type: 'linear',
-                                position: 'left',
-                                title: { display: true, text: 'Jumlah (PCS)', font: { family: "'Inter', sans-serif", weight: 'bold' } },
-                                grid: { borderDash: [4, 4], color: '#e2e8f0' },
-                                beginAtZero: true
-                            },
-                            y_m3: {
-                                type: 'linear',
-                                position: 'right',
-                                title: { display: true, text: 'Volume (M3)', font: { family: "'Inter', sans-serif", weight: 'bold' } },
-                                grid: { display: false },
-                                beginAtZero: true
-                            },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-            }
-
-            // 2. DATA HASIL PRODUKSI (BAR CHART)
-            const produksiLabels = [
-                {% for d in hasil_6_bulan %}'{{d.bulan|date:"M Y"}}', {% endfor %}
-            ];
-            const produksiPCS = [
-                {% for d in hasil_6_bulan %}{{ d.total_pcs|default:0|stringformat:"f" }}, {% endfor %}
-            ];
-            const produksiM3 = [
-                {% for d in hasil_6_bulan %}{{ d.total_m3|default:0|stringformat:"f" }}, {% endfor %}
-            ];
-
-            const ctxProduksi = document.getElementById('grafikProduksi');
-            if (ctxProduksi) {
-                new Chart(ctxProduksi, {
-                    type: 'bar',
-                    data: {
-                        labels: produksiLabels,
-                        datasets: [
-                            {
-                                label: 'Hasil PCS',
-                                data: produksiPCS,
-                                backgroundColor: '#F4C542',
-                                borderRadius: 4,
-                                yAxisID: 'y_pcs',
-                                barPercentage: 0.8
-                            },
-                            {
-                                label: 'Hasil M3',
-                                data: produksiM3,
-                                backgroundColor: '#191970',
-                                borderRadius: 4,
-                                yAxisID: 'y_m3',
-                                barPercentage: 0.8
-                            }
-                        ]
-                    },
-                    options: {
-                        animations: commonAnimations, // Efek gerak naik satu-satu
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false },
-                        plugins: {
-                            legend: { labels: { font: { family: "'Inter', sans-serif" } } }
-                        },
-                        scales: {
-                            y_pcs: {
-                                type: 'linear',
-                                position: 'left',
-                                title: { display: true, text: 'Jumlah (PCS)', font: { family: "'Inter', sans-serif", weight: 'bold' } },
-                                grid: { borderDash: [4, 4], color: '#e2e8f0' },
-                                beginAtZero: true
-                            },
-                            y_m3: {
-                                type: 'linear',
-                                position: 'right',
-                                title: { display: true, text: 'Volume (M3)', font: { family: "'Inter', sans-serif", weight: 'bold' } },
-                                grid: { display: false },
-                                beginAtZero: true
-                            },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-            }
-        });
-    </script>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
+        // Animasi naik dari bawah + stagger
+        const animationDelay = (ctx) => ctx.dataIndex * 150;
+
+        const commonAnimations = {
+            y: {
+                easing: 'easeOutQuart',
+                duration: 1800,
+                from: 500,
+                delay: animationDelay
+            }
+        };
+
+        // =========================
+        // DATA PEMAKAIAN BAHAN
+        // =========================
+        const pemakaianLabels = [
+            {% for d in pemakaian_6_bulan %}
+            '{{d.bulan|date:"M Y"}}',
+            {% endfor %}
+        ];
+
+        const pemakaianPCS = [
+            {% for d in pemakaian_6_bulan %}
+            {{ d.total_pcs|default:0|stringformat:"f" }},
+            {% endfor %}
+        ];
+
+        const pemakaianM3 = [
+            {% for d in pemakaian_6_bulan %}
+            {{ d.total_m3|default:0|stringformat:"f" }},
+            {% endfor %}
+        ];
+
+        const ctxPemakaian = document.getElementById('grafikPemakaian');
+
+        if (ctxPemakaian) {
+
+            const pemakaianGradient = ctxPemakaian
+                .getContext('2d')
+                .createLinearGradient(0, 0, 0, 350);
+
+            pemakaianGradient.addColorStop(0, 'rgba(244, 197, 66, 0.35)');
+            pemakaianGradient.addColorStop(1, 'rgba(244, 197, 66, 0.02)');
+
+            new Chart(ctxPemakaian, {
+                type: 'line',
+
+                data: {
+                    labels: pemakaianLabels,
+
+                    datasets: [
+                        {
+                            label: 'Total PCS',
+                            data: pemakaianPCS,
+                            borderColor: '#F4C542',
+                            backgroundColor: pemakaianGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.45,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#F4C542',
+                            yAxisID: 'y_pcs'
+                        },
+
+                        {
+                            label: 'Total M3',
+                            data: pemakaianM3,
+                            borderColor: '#191970',
+                            backgroundColor: 'rgba(25,25,112,0.08)',
+                            borderWidth: 3,
+                            borderDash: [6, 6],
+                            tension: 0.45,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#191970',
+                            yAxisID: 'y_m3'
+                        }
+                    ]
+                },
+
+                options: {
+                    animations: commonAnimations,
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        },
+
+                        tooltip: {
+                            backgroundColor: '#0D0D5A',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#F4C542',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10
+                        }
+                    },
+
+                    scales: {
+                        y_pcs: {
+                            type: 'linear',
+                            position: 'left',
+
+                            title: {
+                                display: true,
+                                text: 'Jumlah (PCS)',
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    weight: 'bold'
+                                }
+                            },
+
+                            ticks: {
+                                color: '#64748b'
+                            },
+
+                            grid: {
+                                borderDash: [5, 5],
+                                color: 'rgba(148,163,184,0.18)'
+                            },
+
+                            beginAtZero: true
+                        },
+
+                        y_m3: {
+                            type: 'linear',
+                            position: 'right',
+
+                            title: {
+                                display: true,
+                                text: 'Volume (M3)',
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    weight: 'bold'
+                                }
+                            },
+
+                            ticks: {
+                                color: '#64748b'
+                            },
+
+                            grid: {
+                                display: false
+                            },
+
+                            beginAtZero: true
+                        },
+
+                        x: {
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    weight: '600'
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // =========================
+        // DATA HASIL PRODUKSI
+        // =========================
+        const produksiLabels = [
+            {% for d in hasil_6_bulan %}
+            '{{d.bulan|date:"M Y"}}',
+            {% endfor %}
+        ];
+
+        const produksiPCS = [
+            {% for d in hasil_6_bulan %}
+            {{ d.total_pcs|default:0|stringformat:"f" }},
+            {% endfor %}
+        ];
+
+        const produksiM3 = [
+            {% for d in hasil_6_bulan %}
+            {{ d.total_m3|default:0|stringformat:"f" }},
+            {% endfor %}
+        ];
+
+        const ctxProduksi = document.getElementById('grafikProduksi');
+
+        if (ctxProduksi) {
+
+            const gradientPCS = ctxProduksi
+                .getContext('2d')
+                .createLinearGradient(0, 0, 0, 400);
+
+            gradientPCS.addColorStop(0, '#F4C542');
+            gradientPCS.addColorStop(1, '#d9a800');
+
+            const gradientM3 = ctxProduksi
+                .getContext('2d')
+                .createLinearGradient(0, 0, 0, 400);
+
+            gradientM3.addColorStop(0, '#191970');
+            gradientM3.addColorStop(1, '#0D0D5A');
+
+            new Chart(ctxProduksi, {
+                type: 'bar',
+
+                data: {
+                    labels: produksiLabels,
+
+                    datasets: [
+                        {
+                            label: 'Hasil PCS',
+                            data: produksiPCS,
+                            backgroundColor: gradientPCS,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            hoverBackgroundColor: '#ffd95e',
+                            yAxisID: 'y_pcs',
+                            barPercentage: 0.75
+                        },
+
+                        {
+                            label: 'Hasil M3',
+                            data: produksiM3,
+                            backgroundColor: gradientM3,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            hoverBackgroundColor: '#2323b8',
+                            yAxisID: 'y_m3',
+                            barPercentage: 0.75
+                        }
+                    ]
+                },
+
+                options: {
+                    animations: commonAnimations,
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        },
+
+                        tooltip: {
+                            backgroundColor: '#0D0D5A',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#F4C542',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10
+                        }
+                    },
+
+                    scales: {
+                        y_pcs: {
+                            type: 'linear',
+                            position: 'left',
+
+                            title: {
+                                display: true,
+                                text: 'Jumlah (PCS)',
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    weight: 'bold'
+                                }
+                            },
+
+                            ticks: {
+                                color: '#64748b'
+                            },
+
+                            grid: {
+                                borderDash: [5, 5],
+                                color: 'rgba(148,163,184,0.18)'
+                            },
+
+                            beginAtZero: true
+                        },
+
+                        y_m3: {
+                            type: 'linear',
+                            position: 'right',
+
+                            title: {
+                                display: true,
+                                text: 'Volume (M3)',
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    weight: 'bold'
+                                }
+                            },
+
+                            ticks: {
+                                color: '#64748b'
+                            },
+
+                            grid: {
+                                display: false
+                            },
+
+                            beginAtZero: true
+                        },
+
+                        x: {
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    weight: '600'
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 </html>
