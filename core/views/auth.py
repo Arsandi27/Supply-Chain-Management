@@ -20,8 +20,8 @@ def login_view(request):
                 return redirect('dashboard_produksi')
             elif role == 'penjualan':
                 return redirect('dashboard_penjualan')
-            elif role == 'accounting':
-                return redirect('dashboard_accounting')
+            elif role == 'qualitycontrol':
+                return redirect('dashboard_qc')
         else:
             messages.error(request, 'Username atau password salah')
 

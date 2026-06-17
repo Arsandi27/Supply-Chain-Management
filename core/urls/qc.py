@@ -6,5 +6,6 @@ urlpatterns = [
     path('qc/', qc.qc_list, name='qc_list'),
     path('qc/validasi/<int:id>/', qc.qc_validasi, name='qc_validasi'),
     path('qc/edit-validasi/<int:id>/', qc.qc_edit_validasi, name='qc_edit_validasi'),
+    path('quality/', qc.quality_list, name='quality_list'),
 
 ]

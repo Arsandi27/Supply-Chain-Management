@@ -12,7 +12,7 @@
     </h3>
         <hr class="sidebar-divider">
     <ul class="sidebar-menu">
-        <li class="{% if request.path == '/pembeli/' %}active{% endif %}">
+        <li class="{% if request.path == '/penjualan/pembeli/' %}active{% endif %}">
             <a href="{% url 'pembeli_list' %}">
                 <!-- Icon: Users (Data Pembeli) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -24,7 +24,7 @@
             </a>
         </li>
 
-        <li class="{% if request.path == '/penjualan/' %}active{% endif %}">
+        <li class="{% if request.path == '/penjualan/transaksi/' %}active{% endif %}">
             <a href="{% url 'penjualan_list' %}">
                 <!-- Icon: Shopping Cart (Data Penjualan) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -36,7 +36,7 @@
             </a>
         </li>
 
-        <li class="{% if request.path == '/penjualan/stok/' %}active{% endif %}">
+        <li class="{% if request.path == '/penjualan/transaksi/stok/' %}active{% endif %}">
             <a href="{% url 'stok_penjualan' %}">
                 <!-- Icon: Stacked Boxes (Stok Hasil Produksi) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -48,7 +48,7 @@
             </a>
         </li>
 
-        <li class="{% if request.path == '/rekap-penjualan/' %}active{% endif %}">
+        <li class="{% if request.path == '/penjualan/rekap-penjualan/' %}active{% endif %}">
             <a href="{% url 'rekap_penjualan' %}">
                 <!-- Icon: Chart Line / Arrow Trending Up (Rekap Penjualan) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

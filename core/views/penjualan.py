@@ -12,8 +12,6 @@ from django.db.models.functions import TruncMonth
 from core.models import Pembeli, Penjualan, HasilProduksi
 
 
-
-
 def dashboard_penjualan(request):
     today = timezone.now().date()
     six_months_ago = today - timedelta(days=180)
@@ -126,7 +124,13 @@ def penjualan_list(request):
     if date_to:
         data = data.filter(tanggal_penjualan__lte=date_to)
 
-    hasil = HasilProduksi.objects.all()
+    hasil = HasilProduksi.objects.filter(
+        qc__quality__isnull=False,
+        sisa_pcs__gt=0
+    ).select_related(
+        'nama_hasil_produksi',
+        'qc__quality'
+    )
     pembeli = Pembeli.objects.all()
 
     return render(request, 'penjualan/list_penjualan.html', {
@@ -136,13 +140,14 @@ def penjualan_list(request):
         # Kirim tanggal agar tetap muncul di input field setelah difilter
         'date_from': date_from,
         'date_to': date_to,
+        
     })
 from datetime import datetime
 
 @transaction.atomic
 def penjualan_add(request):
     if request.method == "POST":
-        hasil = get_object_or_404(HasilProduksi, id=request.POST["hasil_produksi"])
+        hasil = get_object_or_404(HasilProduksi,id=request.POST["hasil_produksi"],qc__quality__isnull=False)
         pcs = int(request.POST["pcs"])
         m3 = Decimal(request.POST["m3"])
         tanggal_str = request.POST.get('tanggal_penjualan')

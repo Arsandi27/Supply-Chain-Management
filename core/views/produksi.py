@@ -448,8 +448,6 @@ def hasil_produksi_list(request):
         'bahan': PemakaianBahanBaku.objects.all(),
         'nama': NamaHasilProduksi.objects.all(),
         'quality': Quality.objects.all(),
-        
-        # Kirim balik value biar di HTML tetep nangkring di formnya
         'search_query': search_query, 
         'date_from': date_from,
         'date_to': date_to,

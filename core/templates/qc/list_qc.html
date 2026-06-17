@@ -190,14 +190,14 @@
             modal.style.display = 'block'
 
             document.getElementById('formValidasi').action =
-                "/qc/validasi/" + id + "/"
+                "/qc/qc/validasi/" + id + "/"
 
             document.getElementById("valQuality").value = ""
         }
         function openEdit(id, quality_id, catatan) {
             let modal = document.getElementById('modalEdit')
             modal.style.display = 'block'
-            document.getElementById('formEdit').action = "/qc/edit-validasi/" + id + "/"
+            document.getElementById('formEdit').action = "/qc/qc/edit-validasi/" + id + "/"
             document.getElementById("editQuality").value = String(quality_id);
             document.getElementById('editCatatan').value = catatan
         }

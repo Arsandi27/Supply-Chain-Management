@@ -9,7 +9,7 @@ class Profile(models.Model):
         ('purchasing', 'Purchasing'),
         ('produksi', 'Produksi'),
         ('penjualan', 'Penjualan'),
-        ('accounting', 'Accounting'),
+        ('qualitycontrol', 'Quality Control'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)

@@ -14,7 +14,7 @@
         <hr class="sidebar-divider">
         
         <ul class="sidebar-menu">
-            <li class="{% if request.path == '/supplier/' %}active{% endif %}">
+            <li class="{% if request.path == '/purchasing/supplier/' %}active{% endif %}">
                 <a href="{% url 'supplier_list' %}">
                     <!-- Icon: Truck (Supplier) -->
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -26,7 +26,7 @@
                 </a>
             </li>
 
-            <li class="{% if request.path == '/bahanbaku/' %}active{% endif %}">
+            <li class="{% if request.path == '/purchasing/bahanbaku/' %}active{% endif %}">
                 <a href="{% url 'bahanbaku_list' %}">
                     <!-- Icon: Box/Cube (Bahan Baku) -->
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -38,7 +38,7 @@
                 </a>
             </li>
 
-            <li class="{% if request.path == '/bahan-baku-masuk/' %}active{% endif %}">
+            <li class="{% if request.path == '/purchasing/bahan-baku-masuk/' %}active{% endif %}">
                 <a href="{% url 'bahan_baku_masuk_list' %}">
                     <!-- Icon: Arrow Down to Box (Bahan Baku Masuk) -->
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -50,7 +50,7 @@
                 </a>
             </li>
 
-            <li class="{% if request.path == '/rekap-bahan-baku/' %}active{% endif %}">
+            <li class="{% if request.path == '/purchasing/rekap-bahan-baku/' %}active{% endif %}">
                 <a href="{% url 'rekap_bahan_baku' %}">
                     <!-- Icon: Stacked Boxes (Rekap Bahan Baku) -->
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

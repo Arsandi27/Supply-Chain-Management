@@ -254,7 +254,7 @@
 
         bahanSelect.innerHTML = '<option disabled selected>🔄 Sedang memuat bahan...</option>';
 
-        fetch(`/ajax/bahan-by-proses/?proses_id=${prosesId}`)
+        fetch(`/produksi/ajax/bahan-by-proses/?proses_id=${prosesId}`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("Server bermasalah");
@@ -325,7 +325,7 @@
 
     // 2. Set Action Form URL
     const form = document.getElementById('editForm');
-    form.action = '/hasil-produksi/edit/' + id + '/';
+    form.action = '/produksi/hasil-produksi/edit/' + id + '/';
 
     // 3. Set Value Dropdown Nama Produk
     const namaSelect = document.getElementById('editNama');
@@ -353,7 +353,7 @@
 }
     function openDelete(id) {
         document.getElementById('deleteModal').style.display = 'block';
-        document.getElementById('deleteForm').action = '/hasil-produksi/delete/' + id + '/';
+        document.getElementById('deleteForm').action = '/produksi/hasil-produksi/delete/' + id + '/';
     }
 
     function closeModal() {
