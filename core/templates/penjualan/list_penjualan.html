@@ -55,7 +55,7 @@
           <tbody>
             {% for d in data %}
               <tr>
-                <td>{{ forloop.counter }}</td>
+                <td>{{ data.start_index|add:forloop.counter0 }}</td>
                 <td>{{ d.tanggal_penjualan }}</td>
                 <td>{{ d.hasil_produksi.nama_hasil_produksi }}</td>
                 <td>{{ d.pembeli }}</td>
@@ -77,6 +77,7 @@
             {% endfor %}
           </tbody>
         </table>
+        {% include 'partials/pagination.html' %}
       </div>
     </main>
 

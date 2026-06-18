@@ -1,320 +1,312 @@
-{%load rupiah %}
-{%load static%}
+{% load rupiah %}
+{% load static %}
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Bahan Baku Masuk</title>
-    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/logo_laco2.png' %}" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/purchasing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/purchasing.css' %}" />
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  </head>
 
-</head>
-
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+  <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'partials/message_popup.html' with page_tag='bahan_baku_masuk' %}
     {% include 'parts/sidebar_purchasing.html' %}
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
-        <div class="content">
-            <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Bahan Baku Masuk</h2>
-            <div class="filter-container">
-                <button class="btn-tambah" onclick="openAdd()">+ Tambah</button>
+      <div class="content">
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Bahan Baku Masuk</h2>
+        <div class="filter-container">
+          <button class="btn-tambah" onclick="openAdd()">+ Tambah</button>
 
-                <form method="get" class="filter-form">
-                    <input type="text" name="search" placeholder="Cari bahan / supplier..."
-                        value="{{ request.GET.search|default:'' }}">
+          <form method="get" class="filter-form">
+            <input type="text" name="search" placeholder="Cari bahan / supplier..." value="{{ request.GET.search|default:'' }}" />
 
-                    <span>Dari:</span>
-                    <input type="date" name="date_from" value="{{ date_from|default:'' }}">
+            <span>Dari:</span>
+            <input type="date" name="date_from" value="{{ date_from|default:'' }}" />
 
-                    <span>Sampai:</span>
-                    <input type="date" name="date_to" value="{{ date_to|default:'' }}">
+            <span>Sampai:</span>
+            <input type="date" name="date_to" value="{{ date_to|default:'' }}" />
 
-                    <button type="submit" class="btn-filter">Filter</button>
-                    <a href="{% url 'bahan_baku_masuk_list' %}" class="btn-reset">Reset</a>
-                    <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
-                </form>
-            </div>
+            <button type="submit" class="btn-filter">Filter</button>
+            <a href="{% url 'bahan_baku_masuk_list' %}" class="btn-reset">Reset</a>
+            <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
+          </form>
+        </div>
 
-            <br>
-            <table id="bahanTable">
-                <tr>
-                    <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Bahan</th>
-                    <th>Supplier</th>
-                    <th>PCS</th>
-                    <th>M³</th>
-                    <th>Sisa PCS</th>
-                    <th>Sisa M³</th>
-                    <th>Harga</th>
-                    <th class="kolom-aksi-header">Aksi</th>
-                </tr>
+        <br />
+        <table id="bahanTable">
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Bahan</th>
+            <th>Supplier</th>
+            <th>PCS</th>
+            <th>M³</th>
+            <th>Sisa PCS</th>
+            <th>Sisa M³</th>
+            <th>Harga</th>
+            <th class="kolom-aksi-header">Aksi</th>
+          </tr>
 
-                {% for d in data %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ d.tanggal_masuk | date:"d F Y" }}</td>
-                    <td>{{ d.bahan_baku }}</td>
-                    <td>{{ d.supplier }}</td>
-                    <td>{{ d.jumlah_pcs }}</td>
-                    <td>{{ d.jumlah_m3 | floatformat:3 }}</td>
-                    <td>{{ d.sisa_pcs }}</td>
-                    <td>{{ d.sisa_m3 | floatformat:3 }}</td>
-                    <td>{{ d.harga_satuan | rupiah }}</td>
+          {% for d in data %}
+            <tr>
+              <td>{{ data.start_index|add:forloop.counter0 }}</td>
+              <td>{{ d.tanggal_masuk|date:'d F Y' }}</td>
+              <td>{{ d.bahan_baku }}</td>
+              <td>{{ d.supplier }}</td>
+              <td>{{ d.jumlah_pcs }}</td>
+              <td>{{ d.jumlah_m3|floatformat:3 }}</td>
+              <td>{{ d.sisa_pcs }}</td>
+              <td>{{ d.sisa_m3|floatformat:3 }}</td>
+              <td>{{ d.harga_satuan|rupiah }}</td>
 
-                    <td class="kolom-aksi">
-                        <button class="btn-action btn-edit" onclick="openEdit(
+              <td class="kolom-aksi">
+                <button class="btn-action btn-edit" onclick="openEdit(
             '{{ d.id }}',
             '{{ d.bahan_baku.id }}',
             '{{ d.supplier.id }}',
             '{{ d.tanggal_masuk|date:'Y-m-d' }}',
             '{{ d.jumlah_pcs }}',
-            '{{ d.jumlah_m3 |floatformat:3  }}',
-            '{{ d.harga_satuan |floatformat:0  }}'
-        )">
-                            Edit
-                        </button>
-                        <button class="btn-action btn-hapus" onclick="openDelete('{{ d.id }}')">Hapus</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
+            '{{ d.jumlah_m3|floatformat:3 }}',
+            '{{ d.harga_satuan|floatformat:0 }}'
+        )">Edit</button>
+                <button class="btn-action btn-hapus" onclick="openDelete('{{ d.id }}')">Hapus</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+        {% include 'partials/pagination.html' %}
         </div>
     </main>
 
-
     <div class="modal" id="addModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Tambah Bahan Baku Masuk</h3>
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Tambah Bahan Baku Masuk</h3>
 
-            <form method="post" action="{% url 'bahan_baku_masuk_add' %}">
-                {% csrf_token %}
+        <form method="post" action="{% url 'bahan_baku_masuk_add' %}">
+          {% csrf_token %}
 
-                <div class="form-group">
-                    <label>Tanggal Masuk</label>
-                    <input type="date" name="tanggal_masuk" required>
-                </div>
+          <div class="form-group">
+            <label>Tanggal Masuk</label>
+            <input type="date" name="tanggal_masuk" required />
+          </div>
 
-                <div class="form-group">
-                    <label>Pilih Bahan Baku</label>
-                    <select name="bahan_baku" required>
-                        <option value="" disabled selected>-- Pilih Bahan --</option>
-                        {% for b in bahan %}
-                        <option value="{{ b.id }}">{{ b }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+          <div class="form-group">
+            <label>Pilih Bahan Baku</label>
+            <select name="bahan_baku" required>
+              <option value="" disabled selected>-- Pilih Bahan --</option>
+              {% for b in bahan %}
+                <option value="{{ b.id }}">{{ b }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-                <div class="form-group">
-                    <label>Pilih Supplier</label>
-                    <select name="supplier" required>
-                        <option value="" disabled selected>-- Pilih Supplier --</option>
-                        {% for s in supplier %}
-                        <option value="{{ s.id }}">{{ s }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <div class="grid-2-kolom">
-                        <div>
-                            <label>Jumlah (PCS)</label>
-                            <input type="number" name="jumlah_pcs" placeholder="Contoh: 100" required>
-                        </div>
-                        <div>
-                            <label>Volume (M³)</label>
-                            <input type="number" step="0.01" name="jumlah_m3" placeholder="0.00" required>
-                        </div>
-                    </div>
-                </div>
+          <div class="form-group">
+            <label>Pilih Supplier</label>
+            <select name="supplier" required>
+              <option value="" disabled selected>-- Pilih Supplier --</option>
+              {% for s in supplier %}
+                <option value="{{ s.id }}">{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="grid-2-kolom">
+              <div>
+                <label>Jumlah (PCS)</label>
+                <input type="number" name="jumlah_pcs" placeholder="Contoh: 100" required />
+              </div>
+              <div>
+                <label>Volume (M³)</label>
+                <input type="number" step="0.01" name="jumlah_m3" placeholder="0.00" required />
+              </div>
+            </div>
+          </div>
 
-                <div class="form-group">
-                    <label>Harga Satuan</label>
-                    <input type="text" id="harga_satuan_display" placeholder="Rp 0" required>
-                    <input type="hidden" name="harga_satuan" id="harga_satuan">
-                </div>
+          <div class="form-group">
+            <label>Harga Satuan</label>
+            <input type="text" id="harga_satuan_display" placeholder="Rp 0" required />
+            <input type="hidden" name="harga_satuan" id="harga_satuan" />
+          </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-action btn-tidak" onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn-action btn-ya">Simpan Data</button>
-                </div>
-            </form>
-        </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-action btn-tidak" onclick="closeModal()">Batal</button>
+            <button type="submit" class="btn-action btn-ya">Simpan Data</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <div class="modal" id="editModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Edit Data Bahan Baku</h3>
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Edit Data Bahan Baku</h3>
 
-            <form method="post" id="editForm">
-                {% csrf_token %}
+        <form method="post" id="editForm">
+          {% csrf_token %}
 
-                <div class="form-group">
-                    <label>Tanggal Masuk</label>
-                    <input type="date" name="tanggal_masuk">
-                </div>
+          <div class="form-group">
+            <label>Tanggal Masuk</label>
+            <input type="date" name="tanggal_masuk" />
+          </div>
 
-                <div class="form-group">
-                    <label>Bahan Baku</label>
-                    <select name="bahan_baku">
-                        {% for b in bahan %}
-                        <option value="{{ b.id }}">{{ b }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+          <div class="form-group">
+            <label>Bahan Baku</label>
+            <select name="bahan_baku">
+              {% for b in bahan %}
+                <option value="{{ b.id }}">{{ b }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-                <div class="form-group">
-                    <label>Supplier</label>
-                    <select name="supplier">
-                        {% for s in supplier %}
-                        <option value="{{ s.id }}">{{ s }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+          <div class="form-group">
+            <label>Supplier</label>
+            <select name="supplier">
+              {% for s in supplier %}
+                <option value="{{ s.id }}">{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-                <div class="form-group">
-                    <div class="grid-2-kolom">
-                        <div>
-                            <label>Jumlah (PCS)</label>
-                            <input type="number" name="jumlah_pcs" placeholder="0">
-                        </div>
-                        <div>
-                            <label>Volume (M³)</label>
-                            <input type="number" step="0.01" name="jumlah_m3" placeholder="0.00">
-                        </div>
-                    </div>
-                </div>
+          <div class="form-group">
+            <div class="grid-2-kolom">
+              <div>
+                <label>Jumlah (PCS)</label>
+                <input type="number" name="jumlah_pcs" placeholder="0" />
+              </div>
+              <div>
+                <label>Volume (M³)</label>
+                <input type="number" step="0.01" name="jumlah_m3" placeholder="0.00" />
+              </div>
+            </div>
+          </div>
 
-                <!-- Di dalam form Edit Modal Bahan Baku -->
-                <div class="form-group">
-                    <label>Total Harga (Rp)</label>
-                    <!-- Ini yang dilihat user (bisa ngetik format Rp) -->
-                    <input type="text" id="edit_harga_satuan_display" placeholder="Rp 0" required>
+          <!-- Di dalam form Edit Modal Bahan Baku -->
+          <div class="form-group">
+            <label>Total Harga (Rp)</label>
+            <!-- Ini yang dilihat user (bisa ngetik format Rp) -->
+            <input type="text" id="edit_harga_satuan_display" placeholder="Rp 0" required />
 
-                    <!-- Ini yang dikirim ke views.py (angka murni) -->
-                    <input type="hidden" name="harga_satuan" id="edit_harga_satuan">
-                </div>
+            <!-- Ini yang dikirim ke views.py (angka murni) -->
+            <input type="hidden" name="harga_satuan" id="edit_harga_satuan" />
+          </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-action btn-tidak" onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn-action btn-ya">Update Data</button>
-                </div>
-            </form>
-        </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-action btn-tidak" onclick="closeModal()">Batal</button>
+            <button type="submit" class="btn-action btn-ya">Update Data</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <div class="modal" id="deleteModal">
-        <div class="modal-content text-center">
-            <span class="close" onclick="closeModal('deleteModal')">&times;</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-12 h-12 mx-auto">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-            </svg>
-            <h3 class="border-none pb-0">Hapus Data?</h3>
-            <p class="text-sm text-gray-500 mb-6">Data yang dihapus tidak dapat dikembalikan secara otomatis.</p>
+      <div class="modal-content text-center">
+        <span class="close" onclick="closeModal('deleteModal')">&times;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <h3 class="border-none pb-0">Hapus Data?</h3>
+        <p class="text-sm text-gray-500 mb-6">Data yang dihapus tidak dapat dikembalikan secara otomatis.</p>
 
-            <form method="post" id="deleteForm">
-                {% csrf_token %}
-                <div class="modal-actions justify-center"> <button type="button" class="btn-action btn-tidak"
-                        onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn-action btn-ya">Ya, Hapus</button>
-                </div>
-            </form>
-        </div>
+        <form method="post" id="deleteForm">
+          {% csrf_token %}
+          <div class="modal-actions justify-center">
+            <button type="button" class="btn-action btn-tidak" onclick="closeModal()">Batal</button>
+            <button type="submit" class="btn-action btn-ya">Ya, Hapus</button>
+          </div>
+        </form>
+      </div>
     </div>
-</body>
+  </body>
 
-<script>
+  <script>
     function openAdd() {
-        document.getElementById('addModal').style.display = 'block';
+      document.getElementById('addModal').style.display = 'block'
     }
     function openEdit(id, bahan, supplier, tanggal, pcs, m3, harga) {
-        document.getElementById('editModal').style.display = 'block';
-
-        const form = document.getElementById('editForm');
-        form.action = '/bahan-baku-masuk/edit/' + id + '/';
-
-        form.bahan_baku.value = bahan;
-        form.supplier.value = supplier;
-        form.tanggal_masuk.value = tanggal;
-        form.jumlah_pcs.value = pcs;
-        form.jumlah_m3.value = m3;
-        form.harga_satuan.value = harga;
-        // Simpan angka mentahnya ke input hidden
-        document.getElementById('edit_harga_satuan').value = harga;
-
-        // Format harganya pake fungsi formatRupiah lu, trus tampilin ke layar
-        document.getElementById('edit_harga_satuan_display').value = formatRupiah(harga);
+      document.getElementById('editModal').style.display = 'block'
+    
+      const form = document.getElementById('editForm')
+      form.action = '/bahan-baku-masuk/edit/' + id + '/'
+    
+      form.bahan_baku.value = bahan
+      form.supplier.value = supplier
+      form.tanggal_masuk.value = tanggal
+      form.jumlah_pcs.value = pcs
+      form.jumlah_m3.value = m3
+      form.harga_satuan.value = harga
+      // Simpan angka mentahnya ke input hidden
+      document.getElementById('edit_harga_satuan').value = harga
+    
+      // Format harganya pake fungsi formatRupiah lu, trus tampilin ke layar
+      document.getElementById('edit_harga_satuan_display').value = formatRupiah(harga)
     }
     function openDelete(id) {
-        document.getElementById('deleteModal').style.display = 'block';
-        document.getElementById('deleteForm').action = '/bahan-baku-masuk/delete/' + id + '/';
+      document.getElementById('deleteModal').style.display = 'block'
+      document.getElementById('deleteForm').action = '/bahan-baku-masuk/delete/' + id + '/'
     }
     function closeModal() {
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+      document.querySelectorAll('.modal').forEach((m) => (m.style.display = 'none'))
     }
-
+    
     function exportExcel() {
-        let table = document.getElementById("bahanTable");
-
-        if (!table) {
-            alert("Tabel tidak ditemukan!");
-            return;
-        }
-
-        // Clone tabel biar tampilan asli tidak berubah
-        let cloneTable = table.cloneNode(true);
-
-        // Hapus kolom terakhir (Aksi)
-        cloneTable.querySelectorAll("tr").forEach(row => {
-            row.deleteCell(-1);
-        });
-
-        let wb = XLSX.utils.book_new();
-        let ws = XLSX.utils.table_to_sheet(cloneTable);
-
-        XLSX.utils.book_append_sheet(wb, ws, "Bahan Baku Masuk");
-        XLSX.writeFile(wb, "bahan_baku_masuk.xlsx");
+      let table = document.getElementById('bahanTable')
+    
+      if (!table) {
+        alert('Tabel tidak ditemukan!')
+        return
+      }
+    
+      // Clone tabel biar tampilan asli tidak berubah
+      let cloneTable = table.cloneNode(true)
+    
+      // Hapus kolom terakhir (Aksi)
+      cloneTable.querySelectorAll('tr').forEach((row) => {
+        row.deleteCell(-1)
+      })
+    
+      let wb = XLSX.utils.book_new()
+      let ws = XLSX.utils.table_to_sheet(cloneTable)
+    
+      XLSX.utils.book_append_sheet(wb, ws, 'Bahan Baku Masuk')
+      XLSX.writeFile(wb, 'bahan_baku_masuk.xlsx')
     }
-
-    const display = document.getElementById('harga_satuan_display');
-    const hidden = document.getElementById('harga_satuan');
-
+    
+    const display = document.getElementById('harga_satuan_display')
+    const hidden = document.getElementById('harga_satuan')
+    
     display.addEventListener('input', function () {
-        let value = this.value.replace(/[^0-9]/g, '');
-
-        hidden.value = value; // kirim ke backend
-
-        this.value = formatRupiah(value);
-    });
-
+      let value = this.value.replace(/[^0-9]/g, '')
+    
+      hidden.value = value // kirim ke backend
+    
+      this.value = formatRupiah(value)
+    })
+    
     function formatRupiah(angka) {
-        let number_string = angka.toString();
-        let sisa = number_string.length % 3;
-        let rupiah = number_string.substr(0, sisa);
-        let ribuan = number_string.substr(sisa).match(/\d{3}/g);
-
-        if (ribuan) {
-            let separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
-        }
-
-        return angka ? 'Rp. ' + rupiah : '';
+      let number_string = angka.toString()
+      let sisa = number_string.length % 3
+      let rupiah = number_string.substr(0, sisa)
+      let ribuan = number_string.substr(sisa).match(/\d{3}/g)
+    
+      if (ribuan) {
+        let separator = sisa ? '.' : ''
+        rupiah += separator + ribuan.join('.')
+      }
+    
+      return angka ? 'Rp. ' + rupiah : ''
     }
-    const editHargaDisplay = document.getElementById('edit_harga_satuan_display');
-    const editHargaHidden = document.getElementById('edit_harga_satuan');
-
+    const editHargaDisplay = document.getElementById('edit_harga_satuan_display')
+    const editHargaHidden = document.getElementById('edit_harga_satuan')
+    
     if (editHargaDisplay) {
-        editHargaDisplay.addEventListener('input', function () {
-            let value = this.value.replace(/[^0-9]/g, ''); // Ambil angka doang
-            editHargaHidden.value = value; // Simpan ke hidden buat dikirim
-            this.value = formatRupiah(value); // Ubah tampilannya
-        });
+      editHargaDisplay.addEventListener('input', function () {
+        let value = this.value.replace(/[^0-9]/g, '') // Ambil angka doang
+        editHargaHidden.value = value // Simpan ke hidden buat dikirim
+        this.value = formatRupiah(value) // Ubah tampilannya
+      })
     }
-</script>
-
+  </script>
 </html>

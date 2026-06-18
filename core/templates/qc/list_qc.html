@@ -34,18 +34,11 @@
 
                 {% for d in data %}
                 <tr>
-
-                    <td>{{ forloop.counter }}</td>
-
+                    <td>{{ data.start_index|add:forloop.counter0 }}</td>
                     <td>{{ d.proses_produksi.tanggal_produksi }}</td>
-
                     <td>{{ d.nama_hasil_produksi }}</td>
-
                     <td>{{ d.jumlah_pcs }}</td>
-
                     <td>{{ d.jumlah_m3|floatformat:4 }}</td>
-
-
                     <!-- GRADE -->
                     <td>
                         {% if d.qc and d.qc.quality %}
@@ -54,10 +47,7 @@
                         -
                         {% endif %}
                     </td>
-
-
                     <!-- STATUS -->
-
                     <!-- TANGGAL VALIDASI -->
                     <td>
                         {% if d.qc and d.qc.tanggal_validasi %}
@@ -66,8 +56,6 @@
                         -
                         {% endif %}
                     </td>
-
-
                     <!-- CATATAN -->
                     <td>
                         {% if d.qc and d.qc.catatan %}
@@ -76,11 +64,8 @@
                         -
                         {% endif %}
                     </td>
-
-
                     <!-- AKSI -->
                     <td>
-
                         {% if not d.qc %}
                         <button class="btn-tambah" onclick="openValidasi('{{ d.id }}')">
                             Validasi
@@ -116,9 +101,10 @@
             </tbody>
 
         </table>
-
+        {% include 'partials/pagination.html' %}
     </div>
 </main>
+
  <div class="modal" id="modalValidasi">
         <div class="modal-content">
             <span class="close" onclick="closeModal('modalValidasi')">&times;</span>

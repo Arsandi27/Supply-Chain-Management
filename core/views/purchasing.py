@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Sum, Count, Q
+from django.core.paginator import Paginator
+
 
 # === IMPORT MODEL KAMU ===
 # Sesuaikan 'nama_aplikasi_kamu' dengan folder utama aplikasi tempat models.py berada
@@ -157,27 +159,40 @@ def clean_rupiah(value):
     return Decimal(value)
 
 def bahan_baku_masuk_list(request):
-    data = BahanBakuMasuk.objects.select_related('bahan_baku', 'supplier')
+    data = BahanBakuMasuk.objects.select_related(
+        'bahan_baku',
+        'supplier'
+    ).order_by('-tanggal_masuk', '-id')
 
-    # ambil parameter dari GET
-    search = request.GET.get('search')
-    date_from = request.GET.get('date_from')
-    date_to = request.GET.get('date_to')
+    search = request.GET.get('search') or ''
+    date_from = request.GET.get('date_from') or ''
+    date_to = request.GET.get('date_to') or ''
 
-    # SEARCH nama bahan baku
+    if search == 'None':
+        search = ''
+
+    if date_from == 'None':
+        date_from = ''
+
+    if date_to == 'None':
+        date_to = ''
+
     if search:
         data = data.filter(
             Q(bahan_baku__nama_bahan__icontains=search) |
             Q(supplier__nama_supplier__icontains=search)
         )
 
-    # FILTER tanggal
     if date_from and date_to:
         data = data.filter(tanggal_masuk__range=[date_from, date_to])
     elif date_from:
         data = data.filter(tanggal_masuk__gte=date_from)
     elif date_to:
         data = data.filter(tanggal_masuk__lte=date_to)
+
+    paginator = Paginator(data, 10)
+    page_number = request.GET.get('page')
+    data = paginator.get_page(page_number)
 
     bahan = BahanBaku.objects.all()
     supplier = Supplier.objects.all()
@@ -188,8 +203,9 @@ def bahan_baku_masuk_list(request):
         'supplier': supplier,
         'search': search,
         'date_from': date_from,
-        'date_to': date_to
+        'date_to': date_to,
     }
+
     return render(request, 'purchasing/list_bahanbaku_masuk.html', context)
 
 

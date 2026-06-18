@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.db.models import Count
+from django.core.paginator import Paginator
 
 # === IMPORT MODEL KAMU ===
 # Ganti 'nama_aplikasi_kamu' sesuai dengan nama folder aplikasi Django-mu
@@ -71,13 +72,15 @@ def quality_delete(request, id):
     return redirect('quality_list')
 
 
-
 def qc_list(request):
-
     data = HasilProduksi.objects.select_related(
         'proses_produksi',
         'nama_hasil_produksi'
-    )
+    ).order_by('-proses_produksi__tanggal_produksi','-id')
+
+    paginator = Paginator(data, 10)
+    page_number = request.GET.get('page')
+    data = paginator.get_page(page_number)
 
     quality_list = Quality.objects.all()
 

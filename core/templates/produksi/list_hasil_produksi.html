@@ -19,8 +19,7 @@
             <div class="filter-container">
                 <button class=" btn-tambah" onclick="openAdd()">+ Tambah</button>
                 <form method="get" class="filter-form">
-                    <input type="text" name="search" placeholder="Cari nama atau quality..."
-                        value="{{ request.GET.search|default:'' }}">
+                    <input type="text" name="search" placeholder="Cari nama atau quality..." value="{{ search|default:'' }}">
                     <label>Dari</label>
                     <input type="date" name="date_from" value="{{ date_from|default:'' }}">
                     <label>Sampai</label>
@@ -51,7 +50,7 @@
 
                 {% for d in data %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
+                    <td>{{ data.start_index|add:forloop.counter0 }}</td>
                     <td>{{ d.tanggal_produksi| date:"d F Y" }}</td>
                     <td>{{ d.pemakaian_bahan.bahan_baku_masuk }}</td>
                     <td>{{ d.nama_hasil_produksi }}</td>
@@ -84,6 +83,7 @@
                 </tr>
                 {% endfor %}
             </table>
+            {% include 'partials/pagination.html' %}
         </div>
     </main>
 

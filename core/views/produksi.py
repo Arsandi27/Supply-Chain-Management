@@ -9,6 +9,7 @@ from django.db import transaction
 from django.db.models import Sum, Count, Q, F
 from django.db.models.functions import TruncMonth, Coalesce
 from django.utils import timezone
+from django.core.paginator import Paginator
 from core.models import (
     ProsesProduksi, 
     PemakaianBahanBaku, 
@@ -17,6 +18,7 @@ from core.models import (
     NamaHasilProduksi, 
     Quality
 )
+
 
 # Setup Logger untuk AJAX Error Catcher
 logger = logging.getLogger(__name__)
@@ -128,9 +130,15 @@ def hasil_delete(request, id):
 
 
 def proses_produksi_list(request):
-    data = ProsesProduksi.objects.all()
-    return render(request, 'produksi/list_proses.html', {'data': data})
+    data = ProsesProduksi.objects.all().order_by('-tanggal_produksi','-id')
 
+    paginator = Paginator(data, 10)
+    page_number = request.GET.get('page')
+    data = paginator.get_page(page_number)
+
+    return render(request, 'produksi/list_proses.html', {
+        'data': data,
+    })
 
 def proses_produksi_add(request):
     if request.method == 'POST':
@@ -158,7 +166,6 @@ def proses_produksi_delete(request, id):
     return redirect('proses_produksi_list')
 
 
-
 def pemakaian_bahan_list(request):
     data = PemakaianBahanBaku.objects.select_related(
         'proses_produksi',
@@ -166,64 +173,73 @@ def pemakaian_bahan_list(request):
         'bahan_baku_masuk__bahan_baku'
     )
 
-    # ===== FILTER =====
-    nama_bahan = request.GET.get('bahan')
-    tanggal_mulai = request.GET.get('tanggal_mulai')
-    tanggal_selesai = request.GET.get('tanggal_selesai')
+    search = request.GET.get('search') or ''
+    date_from = request.GET.get('date_from') or ''
+    date_to = request.GET.get('date_to') or ''
 
-    if nama_bahan:
+    if search == 'None':
+        search = ''
+    if date_from == 'None':
+        date_from = ''
+    if date_to == 'None':
+        date_to = ''
+
+    if search:
         data = data.filter(
-            bahan_baku_masuk__bahan_baku__nama_bahan__icontains=nama_bahan
+            bahan_baku_masuk__bahan_baku__nama_bahan__icontains=search
         )
 
-   # ===== LOGIKA FILTER RANGE TANGGAL =====
-    if tanggal_mulai and tanggal_selesai:
-        # Jika user mengisi form dari tanggal A sampai tanggal B
-        data = data.filter(proses_produksi__tanggal_produksi__range=[tanggal_mulai, tanggal_selesai])
-    elif tanggal_mulai:
-        # Jika user cuma ngisi tanggal awal aja (mulai dari tanggal A sampai sekarang)
-        data = data.filter(proses_produksi__tanggal_produksi__gte=tanggal_mulai)
-    elif tanggal_selesai:
-        # Jika user cuma ngisi batas akhir aja (semua data sampai tanggal B)
-        data = data.filter(proses_produksi__tanggal_produksi__lte=tanggal_selesai)
+    if date_from and date_to:
+        data = data.filter(
+            proses_produksi__tanggal_produksi__range=[date_from, date_to]
+        )
+    elif date_from:
+        data = data.filter(
+            proses_produksi__tanggal_produksi__gte=date_from
+        )
+    elif date_to:
+        data = data.filter(
+            proses_produksi__tanggal_produksi__lte=date_to
+        )
 
-    data = data.order_by('-proses_produksi__tanggal_produksi')  
-    # ===== LOGIKA PENGGABUNGAN (GROUPING) =====
-    # Grouping berdasarkan nama bahan baku untuk menampilkan total
+    data = data.order_by('-proses_produksi__tanggal_produksi', '-id')
+
     data_rekap = data.values(
-        'bahan_baku_masuk__bahan_baku__nama_bahan' # Patokan groupingnya
+        'bahan_baku_masuk__bahan_baku__nama_bahan'
     ).annotate(
         total_pcs=Sum('jumlah_pcs'),
         total_m3=Sum('jumlah_m3')
     ).order_by('bahan_baku_masuk__bahan_baku__nama_bahan')
 
+    paginator = Paginator(data, 10)
+    page_number = request.GET.get('page')
+    data_detail = paginator.get_page(page_number)
+
     stok_gabungan = BahanBakuMasuk.objects.filter(
-    sisa_pcs__gt=0,
-    sisa_m3__gt=0
+        sisa_pcs__gt=0,
+        sisa_m3__gt=0
     ).values(
-    'bahan_baku_id', # Ambil ID master bahannya
-    'bahan_baku__nama_bahan' # Ambil nama bahannya
+        'bahan_baku_id',
+        'bahan_baku__nama_bahan'
     ).annotate(
-    total_pcs=Sum('sisa_pcs'),
-    total_m3=Sum('sisa_m3')
+        total_pcs=Sum('sisa_pcs'),
+        total_m3=Sum('sisa_m3')
     ).order_by('bahan_baku__nama_bahan')
 
     produksi = ProsesProduksi.objects.all()
-    stok = BahanBakuMasuk.objects.filter(
-        sisa_pcs__gt=0,
-        sisa_m3__gt=0,
-    )
 
     return render(request, 'produksi/list_pemakaian_bahan.html', {
-        'data_detail': data, 
-        'data_rekap': data_rekap, 
+        'data': data_detail,
+        'data_rekap': data_rekap,
         'produksi': produksi,
         'stok': stok_gabungan,
-        'nama_bahan': nama_bahan,
-        'tanggal_mulai': tanggal_mulai,   
-        'tanggal_selesai': tanggal_selesai,
+        'search': search,
+        'date_from': date_from,
+        'date_to': date_to,
     })
-
+    
+    
+    
 from decimal import Decimal
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
@@ -414,27 +430,31 @@ def rekap_pemakaian_bahan(request):
     }
     return render(request, 'produksi/rekap_pemakaian_bahan.html', context)
 
-
 def hasil_produksi_list(request):
     data = HasilProduksi.objects.select_related(
         'proses_produksi',
         'nama_hasil_produksi',
-        'quality', 
+        'quality',
         'pemakaian_bahan',
-    )
-    # Ambil parameter pencarian universal dan tanggal
-    search_query = request.GET.get('search', '')
-    date_from = request.GET.get('date_from')
-    date_to = request.GET.get('date_to')
+    ).order_by('-tanggal_produksi', '-id')
 
-    # 1. FILTER PENCARIAN UNIVERSAL (Nama Produk ATAU Quality)
-    if search_query:
+    search = request.GET.get('search') or ''
+    date_from = request.GET.get('date_from') or ''
+    date_to = request.GET.get('date_to') or ''
+
+    if search == 'None':
+        search = ''
+    if date_from == 'None':
+        date_from = ''
+    if date_to == 'None':
+        date_to = ''
+
+    if search:
         data = data.filter(
-            Q(nama_hasil_produksi__nama_hasil_produksi__icontains=search_query) | 
-            Q(qc__quality__quality__icontains=search_query) # Pastikan relasinya bener, misal: quality__nama_quality tergantung models lu
+            Q(nama_hasil_produksi__nama_hasil_produksi__icontains=search) |
+            Q(qc__quality__quality__icontains=search)
         )
 
-    # 2. FILTER TANGGAL
     if date_from and date_to:
         data = data.filter(tanggal_produksi__range=[date_from, date_to])
     elif date_from:
@@ -442,18 +462,23 @@ def hasil_produksi_list(request):
     elif date_to:
         data = data.filter(tanggal_produksi__lte=date_to)
 
+    paginator = Paginator(data, 10)
+    page_number = request.GET.get('page')
+    data = paginator.get_page(page_number)
+
     context = {
         'data': data,
         'proses': ProsesProduksi.objects.all(),
         'bahan': PemakaianBahanBaku.objects.all(),
         'nama': NamaHasilProduksi.objects.all(),
         'quality': Quality.objects.all(),
-        'search_query': search_query, 
+        'search': search,
         'date_from': date_from,
         'date_to': date_to,
     }
 
     return render(request, 'produksi/list_hasil_produksi.html', context)
+
 
 from django.http import JsonResponse
 from django.db.models.functions import Coalesce

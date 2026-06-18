@@ -21,13 +21,13 @@
         <div class="filter-container" style="margin-bottom: 20px;">
             <button class="btn-tambah" onclick="openAdd()">+ Tambah</button>
             <form method="get" class="filter-form">
-            <input type="text" name="bahan" placeholder="Cari Nama Bahan" value="{{ nama_bahan|default:'' }}">
+            <input type="text" name="search" placeholder="Cari nama bahan baku" value="{{ search|default:'' }}">
 
             <label>Dari</label>
-            <input type="date" name="tanggal_mulai" value="{{ tanggal_mulai|default:'' }}">
+            <input type="date" name="date_from" value="{{ date_from|default:'' }}">
 
             <label>Sampai</label>
-            <input type="date" name="tanggal_selesai" value="{{ tanggal_selesai|default:'' }}">
+            <input type="date" name="date_to" value="{{ date_to|default:'' }}">
 
             <button type="submit" class="btn-filter">Filter</button>
             <a href="{% url 'pemakaian_bahan_list' %}">
@@ -49,9 +49,9 @@
                 <th>Aksi</th>
             </tr>
 
-            {% for d in data_detail %}
+            {% for d in data %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td>{{ data.start_index|add:forloop.counter0 }}</td>
                 <td>{{ d.proses_produksi.tanggal_produksi|date:"d F Y" }}</td>
                 <td>{{ d.bahan_baku_masuk }}</td>
                 <td>{{ d.jumlah_pcs }}</td>
@@ -62,8 +62,9 @@
             </tr>
             {% endfor %}
         </table>
+        {% include 'partials/pagination.html' %}
     </div>
-    </main>
+</main>
 <!-- ================= MODAL TAMBAH PEMAKAIAN BAHAN ================= -->
     <div class="modal" id="addModal">
         <div class="modal-content">

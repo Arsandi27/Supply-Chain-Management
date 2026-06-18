@@ -7,7 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
-
+from django.core.paginator import Paginator
 
 from core.models import Pembeli, Penjualan, HasilProduksi
 
@@ -98,31 +98,38 @@ def pembeli_delete(request, id):
     obj.delete()
     messages.success(request, "Nama Pembeli berhasil dihapus!",extra_tags='pembeli')
     return redirect('pembeli_list')
-
-
 def penjualan_list(request):
-    # Ambil parameter dari form filter
-    search = request.GET.get('search', '')
-    date_from = request.GET.get('date_from', '')
-    date_to = request.GET.get('date_to', '')
+    search = request.GET.get('search') or ''
+    date_from = request.GET.get('date_from') or ''
+    date_to = request.GET.get('date_to') or ''
 
-    # Base query
-    data = Penjualan.objects.select_related('hasil_produksi', 'pembeli')
+    if search == 'None':
+        search = ''
+    if date_from == 'None':
+        date_from = ''
+    if date_to == 'None':
+        date_to = ''
+
+    data = Penjualan.objects.select_related(
+        'hasil_produksi',
+        'pembeli'
+    ).order_by('-tanggal_penjualan', '-id')
 
     if search:
-            data = data.filter(
-                # Tembus 2 kali untuk produk:
-                # hasil_produksi (di Penjualan) -> nama_hasil_produksi (di HasilProduksi) -> nama_hasil_produksi (di NamaHasilProduksi yang berupa CharField)
-                Q(hasil_produksi__nama_hasil_produksi__nama_hasil_produksi__icontains=search) |
-                
-                # Tembus 1 kali untuk pembeli:
-                # pembeli (di Penjualan) -> nama_pembeli (di model Pembeli yang berupa CharField)
-                Q(pembeli__nama_pembeli__icontains=search) 
-            )
+        data = data.filter(
+            Q(hasil_produksi__nama_hasil_produksi__nama_hasil_produksi__icontains=search) |
+            Q(pembeli__nama_pembeli__icontains=search)
+        )
+
     if date_from:
         data = data.filter(tanggal_penjualan__gte=date_from)
+
     if date_to:
         data = data.filter(tanggal_penjualan__lte=date_to)
+
+    paginator = Paginator(data, 10)
+    page_number = request.GET.get('page')
+    data = paginator.get_page(page_number)
 
     hasil = HasilProduksi.objects.filter(
         qc__quality__isnull=False,
@@ -131,17 +138,18 @@ def penjualan_list(request):
         'nama_hasil_produksi',
         'qc__quality'
     )
+
     pembeli = Pembeli.objects.all()
 
     return render(request, 'penjualan/list_penjualan.html', {
         'data': data,
         'hasil': hasil,
         'pembeli': pembeli,
-        # Kirim tanggal agar tetap muncul di input field setelah difilter
+        'search': search,
         'date_from': date_from,
         'date_to': date_to,
-        
     })
+    
 from datetime import datetime
 
 @transaction.atomic
