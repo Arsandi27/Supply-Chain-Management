@@ -14,7 +14,7 @@
   {% include 'parts/sidebar_purchasing.html' %}
   <main class="flex-1 flex flex-col h-full overflow-y-auto">
     <div class="content">
-      <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Nama Supplier</h2>
+      <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Nama Supplier</h2>
       <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
 
       <br><br>
@@ -137,12 +137,12 @@
     document.getElementById('editNama').value = nama;
     document.getElementById('editAlamat').value = alamat;
     document.getElementById('editKontak').value = kontak;
-    document.getElementById('editForm').action = '/supplier/edit/' + id + '/';
+    document.getElementById('editForm').action = '/purchasing/supplier/edit/' + id + '/';
   }
 
   function openDeleteModal(id) {
     document.getElementById('deleteModal').style.display = 'block';
-    document.getElementById('deleteForm').action = '/supplier/delete/' + id + '/';
+    document.getElementById('deleteForm').action = '/purchasing/supplier/delete/' + id + '/';
   }
 
   function closeModal(id) {

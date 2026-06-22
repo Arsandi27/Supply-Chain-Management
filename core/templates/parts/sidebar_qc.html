@@ -11,7 +11,7 @@
     </h3>
     <hr class="sidebar-divider">
     <ul class="sidebar-menu">
-        <li class="{% if request.path == '/quality/' %}active{% endif %}">
+        <li class="{% if request.path == '/qc/quality/' %}active{% endif %}">
             <a href="{% url 'quality_list' %}">
                 <!-- Icon: Check Badge (Quality) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -23,7 +23,7 @@
             </a>
         </li>
 
-        <li class="{% if request.path == '/qc/' %}active{% endif %}">
+        <li class="{% if request.path == '/qc/qc/' %}active{% endif %}">
             <a href="{% url 'qc_list' %}">
                 <!-- Icon: Clipboard Document Check (Validasi Quality) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

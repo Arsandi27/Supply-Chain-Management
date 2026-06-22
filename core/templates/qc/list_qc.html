@@ -13,7 +13,7 @@
     {% include 'parts/sidebar_qc.html' %}
     <main class="flex-1 h-full overflow-y-auto p-6">
     <div class="content">
-        <h2 class="text-2xl font-bold mb-4">Daftar Validasi Quality Control</h2>
+        <h2 class="text-2xl font-bold mb-4">Menentukan Klasifikasi Hasill Produksi Quality Control</h2>
         <table border="1" cellpadding="8" cellspacing="0">
 
             <thead>
@@ -147,6 +147,7 @@
                 <div class="form-group">
                     <label>Grade / Quality</label>
                     <select name="quality" id="editQuality" required>
+                        
                         {% for q in quality_list %}
                         <option value="{{ q.id }}">{{ q.quality }}</option>
                         {% endfor %}

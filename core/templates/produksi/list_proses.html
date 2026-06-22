@@ -16,7 +16,7 @@
     {% include 'parts/sidebar_produksi.html' %}
     <main class="flex-1 flex flex-col h-full overflow-hidden">
     <div class="content">
-        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Proses Produksi</h2>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Proses Produksi</h2>
         <button class="btn-tambah" style="margin-bottom: 20px;" onclick="openAdd()">+ Tambah</button>
 
         <table border="1">
@@ -121,11 +121,11 @@
     function openAdd() { addModal.style.display = 'block' }
     function openEdit(id) {
         editModal.style.display = 'block'
-        editForm.action = '/produksi/edit/' + id + '/'
+        editForm.action = '/produksi/proses/edit/' + id + '/'
     }
     function openDelete(id) {
         deleteModal.style.display = 'block'
-        deleteForm.action = '/produksi/delete/' + id + '/'
+        deleteForm.action = '/produksi/proses/delete/' + id + '/'
     }
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';

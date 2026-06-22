@@ -408,7 +408,7 @@ def rekap_pemakaian_bahan(request):
         'bahan_baku_masuk',
         'bahan_baku_masuk__supplier',
         'bahan_baku_masuk__bahan_baku'
-    )
+    ).order_by('-proses_produksi__tanggal_produksi', '-id')
 
     start = request.GET.get('start')
     end = request.GET.get('end')
@@ -650,7 +650,7 @@ def rekap_hasil_produksi(request):
     ).filter(
         qc__isnull=False,        # Pastikan sudah ada proses QC
         qc__quality__isnull=False # Pastikan grade/quality-nya sudah dipilih
-    )
+    ).order_by('-tanggal_produksi', '-id')
 
     start = request.GET.get('start')
     end = request.GET.get('end')

@@ -15,7 +15,7 @@
     {% include 'parts/sidebar_purchasing.html' %}
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
       <div class="content">
-        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Bahan Baku Masuk</h2>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Bahan Baku Masuk</h2>
         <div class="filter-container">
           <button class="btn-tambah" onclick="openAdd()">+ Tambah</button>
 
@@ -39,10 +39,10 @@
           <tr>
             <th>No</th>
             <th>Tanggal</th>
-            <th>Bahan</th>
-            <th>Supplier</th>
-            <th>PCS</th>
-            <th>M³</th>
+            <th>Nama Bahan Baku</th>
+            <th>Nama Supplier</th>
+            <th>Jumlah PCS</th>
+            <th>Jumlah M³</th>
             <th>Sisa PCS</th>
             <th>Sisa M³</th>
             <th>Harga</th>
@@ -74,10 +74,14 @@
                 <button class="btn-action btn-hapus" onclick="openDelete('{{ d.id }}')">Hapus</button>
               </td>
             </tr>
+          {% empty %}
+            <tr>
+              <td colspan="10">Data tidak ditemukan</td>
+            </tr>
           {% endfor %}
         </table>
         {% include 'partials/pagination.html' %}
-        </div>
+      </div>
     </main>
 
     <div class="modal" id="addModal">
@@ -229,7 +233,7 @@
       document.getElementById('editModal').style.display = 'block'
     
       const form = document.getElementById('editForm')
-      form.action = '/bahan-baku-masuk/edit/' + id + '/'
+      form.action = '/purchasing/bahan-baku-masuk/edit/' + id + '/'
     
       form.bahan_baku.value = bahan
       form.supplier.value = supplier

@@ -289,7 +289,7 @@ def bahan_baku_masuk_delete(request, id):
 
 
 def rekap_bahan_baku(request):
-    data = BahanBakuMasuk.objects.filter()
+    data = BahanBakuMasuk.objects.all().order_by('-tanggal_masuk', '-id')
 
     start = request.GET.get('start')
     end = request.GET.get('end')

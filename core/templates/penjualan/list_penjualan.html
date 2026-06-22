@@ -18,7 +18,7 @@
     {% include 'parts/sidebar_penjualan.html' %}
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
       <div class="content">
-        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Data Transaksi Penjualan</h2>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Transaksi Penjualan</h2>
 
         <div class="filter-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;">
           <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
@@ -44,10 +44,11 @@
             <tr>
               <th width="5%">No</th>
               <th>Tanggal</th>
-              <th>Produk</th>
-              <th>Pembeli</th>
-              <th>PCS</th>
-              <th>M³</th>
+              <th>Nama Produk</th>
+              <th>Nama Pembeli</th>
+              <th>Nama Quality</th>
+              <th>Jumlah PCS</th>
+              <th>Jumlah M³</th>
               <th>Total Harga</th>
               <th>Aksi</th>
             </tr>
@@ -59,15 +60,16 @@
                 <td>{{ d.tanggal_penjualan }}</td>
                 <td>{{ d.hasil_produksi.nama_hasil_produksi }}</td>
                 <td>{{ d.pembeli }}</td>
+                <td>{{ d.hasil_produksi.qc.quality.quality }}</td>
                 <td>{{ d.pcs }}</td>
                 <td>{{ d.m3|floatformat:3 }}</td>
                 <td>{{ d.total_harga|rupiah }}</td>
                 <td>
                   <!-- Tombol Edit -->
-                  <button type="button" class="btn-action btn-edit" onclick="openEditModal('{{ d.id }}', '{{ d.tanggal_penjualan }}', '{{ d.hasil_produksi.id }}', '{{ d.pembeli.id }}', '{{ d.pcs }}', '{{ d.m3 }}', '{{ d.total_harga }}')"><i class="fa fa-edit"></i> Edit</button>
+                  <button type="button" class="btn-action btn-edit" onclick="openEditModal('{{ d.id }}', '{{ d.tanggal_penjualan }}', '{{ d.hasil_produksi.id }}', '{{ d.pembeli.id }}', '{{ d.pcs }}', '{{ d.m3 }}', '{{ d.total_harga }}')"> Edit</button>
 
                   <!-- Tombol Hapus -->
-                  <button type="button" class="btn-action btn-hapus" onclick="openDeleteModal('{{ d.id }}')"><i class="fa fa-trash"></i> Hapus</button>
+                  <button type="button" class="btn-action btn-hapus" onclick="openDeleteModal('{{ d.id }}')"> Hapus</button>
                 </td>
               </tr>
             {% empty %}
@@ -260,7 +262,7 @@
       document.getElementById('editTotal').value = cleanTotal
       document.getElementById('editTotalDisplay').value = formatRupiah(cleanTotal)
     
-      document.getElementById('editForm').action = `/penjualan/edit/${id}/`
+      document.getElementById('editForm').action = `/penjualan/transaksi/edit/${id}/`
     
       // Kalau lu pake fungsi openModal terpisah, panggil di sini
       // openModal('editModal');
@@ -269,7 +271,7 @@
     /* DELETE */
     function openDeleteModal(id) {
       document.getElementById('deleteModal').style.display = 'block'
-      document.getElementById('deleteForm').action = `/penjualan/delete/${id}/`
+      document.getElementById('deleteForm').action = `/penjualan/transaksi/delete/${id}/`
       openModal('deleteModal')
     }
     
