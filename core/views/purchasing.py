@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.db.models import Sum, Count, Q
 from django.core.paginator import Paginator
-
+from core.decorators import role_required
 
 # === IMPORT MODEL KAMU ===
 # Sesuaikan 'nama_aplikasi_kamu' dengan folder utama aplikasi tempat models.py berada
@@ -17,6 +17,7 @@ from core.models import Supplier, BahanBaku, BahanBakuMasuk
 
 
 @login_required(login_url='login')
+@role_required('purchasing')
 @never_cache
 def dashboard_purchasing(request):
     today = timezone.now().date()
@@ -71,11 +72,17 @@ def dashboard_purchasing(request):
     return render(request, 'purchasing/dashboard.html', context)
 
 
-
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def supplier_list(request):
     data = Supplier.objects.all()
     return render(request, 'purchasing/list_supplier.html', {'data': data})
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def supplier_create(request):
     if request.method == 'POST':
         Supplier.objects.create(
@@ -87,6 +94,10 @@ def supplier_create(request):
         return redirect('supplier_list')
     return render(request, 'purchasing/form.html')
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def supplier_edit(request, id):
     supplier = get_object_or_404(Supplier, id=id)
     if request.method == 'POST':
@@ -98,6 +109,10 @@ def supplier_edit(request, id):
         return redirect('supplier_list')
     return render(request, 'purchasing/form.html', {'supplier': supplier})
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def supplier_delete(request, id):
     supplier = get_object_or_404(Supplier, id=id)
     supplier.delete()
@@ -106,10 +121,17 @@ def supplier_delete(request, id):
 
 
 
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahanbaku_list(request):
     data = BahanBaku.objects.all()
     return render(request, 'purchasing/list_bahanbaku.html', {'data': data})
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahanbaku_create(request):
     if request.method == 'POST':
         BahanBaku.objects.create(
@@ -119,6 +141,10 @@ def bahanbaku_create(request):
         return redirect('bahanbaku_list')
     return render(request, 'bahanbaku/form.html')
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahanbaku_edit(request, id):
     obj = get_object_or_404(BahanBaku, id=id)
     if request.method == 'POST':
@@ -128,6 +154,10 @@ def bahanbaku_edit(request, id):
         return redirect('bahanbaku_list')
     return render(request, 'bahanbaku/form.html', {'obj': obj})
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahanbaku_delete(request, id):
     obj = get_object_or_404(BahanBaku, id=id)
     obj.delete()
@@ -158,6 +188,10 @@ def clean_rupiah(value):
 
     return Decimal(value)
 
+
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahan_baku_masuk_list(request):
     data = BahanBakuMasuk.objects.select_related(
         'bahan_baku',
@@ -209,6 +243,9 @@ def bahan_baku_masuk_list(request):
     return render(request, 'purchasing/list_bahanbaku_masuk.html', context)
 
 
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 @transaction.atomic
 def bahan_baku_masuk_add(request):
     if request.method == 'POST':
@@ -224,6 +261,9 @@ def bahan_baku_masuk_add(request):
     return redirect('bahan_baku_masuk_list')
 
 
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahan_baku_masuk_edit(request, id):
     data = get_object_or_404(BahanBakuMasuk, id=id)
 
@@ -280,6 +320,9 @@ def bahan_baku_masuk_edit(request, id):
     return redirect('bahan_baku_masuk_list')
 
 
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def bahan_baku_masuk_delete(request, id):
     data = get_object_or_404(BahanBakuMasuk, id=id)
     data.delete()
@@ -288,6 +331,9 @@ def bahan_baku_masuk_delete(request, id):
 
 
 
+@login_required(login_url='login')
+@role_required('purchasing')
+@never_cache
 def rekap_bahan_baku(request):
     data = BahanBakuMasuk.objects.all().order_by('-tanggal_masuk', '-id')
 

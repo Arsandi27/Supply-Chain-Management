@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
+from django.views.decorators.cache import never_cache
 
 def login_view(request):
     if request.method == "POST":
@@ -28,6 +28,11 @@ def login_view(request):
     return render(request, 'auth/login.html')
 
 
+@never_cache
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    response = redirect('login')
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response

@@ -10,10 +10,11 @@
 </head>
 
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    {% include 'partials/message_popup.html' with page_tag='quality' %}
     {% include 'parts/sidebar_qc.html' %}
     <main class="flex-1 h-full overflow-y-auto p-6">
         <div class="content">
-            <h2 class="text-2xl font-bold mb-4">Mengelola Data Nama Quality</h2>
+            <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Nama Quality</h2>
             <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
 
             <br><br>
@@ -43,7 +44,7 @@
             <span class="close" onclick="closeModal('addModal')">&times;</span>
             <h3>Tambah Quality Grade</h3>
 
-            <form method="post" action="/quality/add/">
+            <form method="post" action="/qc/quality/add/">
                 {% csrf_token %}
                 <div class="form-group">
                     <label>Nama Quality / Grade</label>
@@ -51,8 +52,8 @@
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-modal btn-batal" onclick="closeModal('addModal')">Batal</button>
-                    <button type="submit" class="btn-modal btn-ya">Simpan Data</button>
+                    <button type="button" class="btn-action btn-tidak" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-action btn-ya">Simpan Data</button>
                 </div>
             </form>
         </div>
@@ -107,12 +108,12 @@
     function openEditModal(id, nama, alamat, kontak) {
         document.getElementById('editModal').style.display = 'block';
         document.getElementById('editQuality').value = nama;
-        document.getElementById('editForm').action = '/quality/edit/' + id + '/';
+        document.getElementById('editForm').action = '/qc/quality/edit/' + id + '/';
     }
 
     function openDeleteModal(id) {
         document.getElementById('deleteModal').style.display = 'block';
-        document.getElementById('deleteForm').action = '/quality/delete/' + id + '/';
+        document.getElementById('deleteForm').action = '/qc/quality/delete/' + id + '/';
     }
 
     function closeModal(id) {

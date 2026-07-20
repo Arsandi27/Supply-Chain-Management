@@ -16,21 +16,23 @@
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
       <div class="content">
         <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Bahan Baku Masuk</h2>
-        <div class="filter-container">
+
+        <div class="filter-container" style="display: flex; align-items: center; flex-wrap: wrap; gap: 15px;">
           <button class="btn-tambah" onclick="openAdd()">+ Tambah</button>
 
-          <form method="get" class="filter-form">
-            <input type="text" name="search" placeholder="Cari bahan / supplier..." value="{{ request.GET.search|default:'' }}" />
+          <form method="get" class="filter-form" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-grow: 1;">
+            <input type="text" name="search" placeholder="Cari bahan / supplier..." value="{{ request.GET.search|default:'' }}" style="width: 180px;" />
 
             <span>Dari:</span>
-            <input type="date" name="date_from" value="{{ date_from|default:'' }}" />
+            <input type="date" name="date_from" value="{{ date_from|default:'' }}" style="width: auto;" />
 
             <span>Sampai:</span>
-            <input type="date" name="date_to" value="{{ date_to|default:'' }}" />
+            <input type="date" name="date_to" value="{{ date_to|default:'' }}" style="width: auto;" />
 
-            <button type="submit" class="btn-filter">Filter</button>
+            <button type="submit" class="btn-filter">Filter/Cari</button>
             <a href="{% url 'bahan_baku_masuk_list' %}" class="btn-reset">Reset</a>
-            <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
+
+            <button type="button" class="btn-export" onclick="exportExcel()" style="margin-left: auto;">Export Excel</button>
           </form>
         </div>
 

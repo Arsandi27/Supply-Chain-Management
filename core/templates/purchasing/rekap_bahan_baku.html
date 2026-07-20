@@ -30,7 +30,7 @@
                     <button type="submit" class="btn-filter">Filter</button>
                     <a href="{% url 'rekap_bahan_baku' %}" class="btn-reset">Reset</a>
                     <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
-                    <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
+                    <button type="button" class="btn-print" onclick="printPDF()">Export PDF</button>
                 </form>
             </div>
             <table id="rekapTable">
@@ -94,7 +94,8 @@
             const today = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `rekap_bahan_baku_${today}.xlsx`);
         }
-    async function printPDF() {
+
+   async function printPDF() {
     const { jsPDF } = window.jspdf;
 
     const doc = new jsPDF('p', 'mm', 'a4');
@@ -215,12 +216,24 @@
 
     // ===== TANDA TANGAN =====
     const today = new Date().toLocaleDateString('id-ID');
-
     doc.setFont("helvetica", "normal");
 
-    // ===== SAVE PDF =====
-    const todayFile = new Date().toISOString().slice(0, 10);
-    doc.save(`rekap_bahan_baku_${todayFile}.pdf`);
+    // ===== UBAH KE MODE PRINT =====
+    // Membuat PDF menjadi Blob URL
+    const blobUrl = doc.output('bloburl');
+    
+    // Buka PDF di tab baru agar tidak mengganggu halaman utama
+    const printWindow = window.open(blobUrl, '_blank');
+    
+    // Trigger dialog print setelah window baru siap
+    if (printWindow) {
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    } else {
+        // Antisipasi jika browser memblokir pop-up otomatis
+        alert("Gagal membuka jendela cetak. Pastikan pop-up browser tidak diblokir.");
+    }
 }
     </script>
 

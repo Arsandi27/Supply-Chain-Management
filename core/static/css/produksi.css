@@ -1,6 +1,7 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
@@ -101,6 +102,10 @@
 
         .btn-print:hover {
             background-color: #fee2e2;
+        }
+
+        .table-small {
+            width: 980px;
         }
 
         /* --- TABLE (Tampilan Melengkung & Bergaris Sesuai Gambar) --- */
@@ -223,7 +228,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            background-color: #191970;;
+            background-color: #191970;
+            ;
             /* Tema Biru Tua */
             color: #ffffff;
             border: 1px solid #191970;
@@ -252,7 +258,8 @@
 
         /* Tombol Edit - Midnight Blue */
         .btn-edit {
-            background-color: #191970;;
+            background-color: #191970;
+            ;
             color: #ffffff;
             border: 1px solid #191970;
         }
@@ -278,50 +285,51 @@
             /* Teks berubah jadi merah */
             border-color: #fca5a5;
         }
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 25px;
-}
 
-.page-btn {
-    min-width: 40px;
-    height: 40px;
-    padding: 0 12px;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    background: white;
-    color: #374151;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+        }
 
-.page-btn:hover {
-    background: #191970;
-    color: white;
-    border-color: #191970;
-    transform: translateY(-2px);
-}
+        .page-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
 
-.page-btn.active {
-    background: #191970;
-    color: white;
-    border-color: #191970;
-    cursor: default;
-}
+        .page-btn:hover {
+            background: #191970;
+            color: white;
+            border-color: #191970;
+            transform: translateY(-2px);
+        }
 
-.pagination-info {
-    text-align: center;
-    margin-top: 10px;
-    color: #6b7280;
-    font-size: 14px;
-}
+        .page-btn.active {
+            background: #191970;
+            color: white;
+            border-color: #191970;
+            cursor: default;
+        }
+
+        .pagination-info {
+            text-align: center;
+            margin-top: 10px;
+            color: #6b7280;
+            font-size: 14px;
+        }
 
         /* --- MODALS --- */
         .modal {

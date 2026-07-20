@@ -10,10 +10,11 @@
 </head>
 
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+     {% include 'partials/message_popup.html' with page_tag='qc_validasi' %}
     {% include 'parts/sidebar_qc.html' %}
     <main class="flex-1 h-full overflow-y-auto p-6">
     <div class="content">
-        <h2 class="text-2xl font-bold mb-4">Menentukan Klasifikasi Hasill Produksi Quality Control</h2>
+        <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Menentukan Klasifikasi Data Hasil Produksi Quality Control</h2>
         <table border="1" cellpadding="8" cellspacing="0">
 
             <thead>
@@ -77,7 +78,7 @@
                             '{{ d.qc.id }}',
                             '{{ d.qc.quality.id }}',
                             '{{ d.qc.status }}',
-                            `{{ d.qc.catatan|default:'' }}`
+                            `{{ d.qc.catatan|default:''|escapejs }}`
                         )">
                             Edit
                         </button>
@@ -125,7 +126,7 @@
 
                 <div class="form-group">
                     <label>Catatan Pemeriksaan</label>
-                    <textarea name="catatan" rows="4" placeholder="Berikan alasan atau catatan detail mengenai kualitas produk..."></textarea>
+                    <textarea name="catatan" rows="4" required placeholder="Berikan alasan atau catatan detail mengenai kualitas produk..."></textarea>
                 </div>
 
                 <div class="modal-actions">
@@ -156,7 +157,7 @@
 
                 <div class="form-group">
                     <label>Catatan Pemeriksaan</label>
-                    <textarea name="catatan" id="editCatatan" rows="4"></textarea>
+                    <textarea name="catatan" id="editCatatan" rows="4" required ></textarea>
                 </div>
 
                 <div class="modal-actions">

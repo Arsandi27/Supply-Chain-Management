@@ -10,8 +10,13 @@ from django.db.models.functions import TruncMonth
 from django.core.paginator import Paginator
 
 from core.models import Pembeli, Penjualan, HasilProduksi
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from core.decorators import role_required
 
-
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def dashboard_penjualan(request):
     today = timezone.now().date()
     six_months_ago = today - timedelta(days=180)
@@ -71,10 +76,16 @@ def dashboard_penjualan(request):
 
     return render(request, 'penjualan/dashboard.html', context)
 
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def pembeli_list(request):
     data = Pembeli.objects.all()
     return render(request, 'penjualan/list_pembeli.html', {'data': data})
 
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def pembeli_create(request):
     if request.method == 'POST':
         Pembeli.objects.create(
@@ -84,6 +95,9 @@ def pembeli_create(request):
         return redirect('pembeli_list')
     return render(request, 'pembeli/form.html')
 
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def pembeli_edit(request, id):
     obj = get_object_or_404(Pembeli, id=id)
     if request.method == 'POST':
@@ -93,11 +107,18 @@ def pembeli_edit(request, id):
         return redirect('pembeli_list')
     return render(request, 'pembeli/form.html', {'obj': obj})
 
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def pembeli_delete(request, id):
     obj = get_object_or_404(Pembeli, id=id)
     obj.delete()
     messages.success(request, "Nama Pembeli berhasil dihapus!",extra_tags='pembeli')
     return redirect('pembeli_list')
+
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def penjualan_list(request):
     search = request.GET.get('search') or ''
     date_from = request.GET.get('date_from') or ''
@@ -133,7 +154,6 @@ def penjualan_list(request):
 
     hasil = HasilProduksi.objects.filter(
         qc__quality__isnull=False,
-        sisa_pcs__gt=0
     ).select_related(
         'nama_hasil_produksi',
         'qc__quality'
@@ -152,6 +172,10 @@ def penjualan_list(request):
     
 from datetime import datetime
 
+
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 @transaction.atomic
 def penjualan_add(request):
     if request.method == "POST":
@@ -193,6 +217,9 @@ def penjualan_add(request):
         messages.success(request, "Transaksi Penjualan berhasil ditambahkan!",extra_tags='penjualan')
         return redirect("penjualan_list")
     
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 @transaction.atomic
 def penjualan_edit(request, id):
     penjualan = get_object_or_404(Penjualan, id=id)
@@ -243,6 +270,10 @@ def penjualan_edit(request, id):
         messages.success(request, "Transaksi Penjualan berhasil diubah!",extra_tags='penjualan')
         return redirect("penjualan_list")
     
+    
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 @transaction.atomic
 def penjualan_delete(request, id):
     penjualan = get_object_or_404(Penjualan, id=id)
@@ -259,6 +290,10 @@ def penjualan_delete(request, id):
 
 from django.db.models import Sum
 from datetime import date, timedelta
+
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def stok_penjualan(request):
 
     # ======================
@@ -295,7 +330,9 @@ def stok_penjualan(request):
 
     return render(request, 'penjualan/stok_penjualan.html', context)
 
-
+@login_required(login_url='login')
+@role_required('penjualan')
+@never_cache
 def rekap_penjualan(request):
     data = Penjualan.objects.select_related(
         'hasil_produksi',

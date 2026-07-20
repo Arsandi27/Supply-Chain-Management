@@ -3,6 +3,10 @@ from decimal import Decimal
 import logging
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from core.decorators import role_required
+
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
@@ -23,7 +27,9 @@ from core.models import (
 # Setup Logger untuk AJAX Error Catcher
 logger = logging.getLogger(__name__)
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def dashboard_produksi(request):
     today = timezone.now().date()
     six_months_ago = today - timedelta(days=180)
@@ -99,11 +105,16 @@ def dashboard_produksi(request):
 
     return render(request, 'produksi/dashboard.html', context)
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_list(request):
     data = NamaHasilProduksi.objects.all()
     return render(request, 'produksi/list_nama_hasil_produksi.html', {'data': data})
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_create(request):
     if request.method == 'POST':
         NamaHasilProduksi.objects.create(
@@ -113,6 +124,9 @@ def hasil_create(request):
         return redirect('hasil_list')
     return render(request, 'hasil/form.html')
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_edit(request, id):
     obj = get_object_or_404(NamaHasilProduksi, id=id)
     if request.method == 'POST':
@@ -122,13 +136,18 @@ def hasil_edit(request, id):
         return redirect('hasil_list')
     return render(request, 'hasil/form.html', {'obj': obj})
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_delete(request, id):
     obj = get_object_or_404(NamaHasilProduksi, id=id)
     obj.delete()
     messages.success(request, "Nama Hasil Produksi berhasil dihapus!",extra_tags='nama_hasil_produksi')
     return redirect('hasil_list')
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def proses_produksi_list(request):
     data = ProsesProduksi.objects.all().order_by('-tanggal_produksi','-id')
 
@@ -140,6 +159,9 @@ def proses_produksi_list(request):
         'data': data,
     })
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def proses_produksi_add(request):
     if request.method == 'POST':
         ProsesProduksi.objects.create(
@@ -149,7 +171,9 @@ def proses_produksi_add(request):
     messages.success(request, "Proses Produksi berhasil dicatat!",extra_tags='proses_produksi')
     return redirect('proses_produksi_list')
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def proses_produksi_edit(request, id):
     data = get_object_or_404(ProsesProduksi, id=id)
     if request.method == 'POST':
@@ -159,13 +183,17 @@ def proses_produksi_edit(request, id):
     messages.success(request, "Proses Produksi berhasil diedit!",extra_tags='proses_produksi')
     return redirect('proses_produksi_list')
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def proses_produksi_delete(request, id):
     get_object_or_404(ProsesProduksi, id=id).delete()
     messages.success(request, "Proses Produksi berhasil dihapus!",extra_tags='proses_produksi')
     return redirect('proses_produksi_list')
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def pemakaian_bahan_list(request):
     data = PemakaianBahanBaku.objects.select_related(
         'proses_produksi',
@@ -246,6 +274,9 @@ from django.contrib import messages
 from django.db import transaction
 # Pastikan model PemakaianBahanBaku, BahanBakuMasuk sudah di-import
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def pemakaian_bahan_add(request):
     if request.method == 'POST':
         proses_id = int(request.POST['proses'])
@@ -312,6 +343,10 @@ def pemakaian_bahan_add(request):
 
         messages.success(request, "Pemakaian bahan baku berhasil dicatat!",extra_tags='pemakaian_bahan')
         return redirect('pemakaian_bahan_list')
+    
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def pemakaian_bahan_edit(request, id):
     # 1. Ambil salah satu data pemakaian sebagai patokan
     pemakaian_awal = get_object_or_404(PemakaianBahanBaku, id=id)
@@ -386,6 +421,9 @@ def pemakaian_bahan_edit(request, id):
     messages.success(request, "Pemakaian bahan baku berhasil diedit!",extra_tags='pemakaian_bahan')
     return redirect('pemakaian_bahan_list')
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def pemakaian_bahan_delete(request, id):
     pemakaian = get_object_or_404(PemakaianBahanBaku, id=id)
     stok = pemakaian.bahan_baku_masuk
@@ -402,7 +440,9 @@ def pemakaian_bahan_delete(request, id):
     messages.success(request, "Pemakaian bahan baku berhasil dihapus!",extra_tags='pemakaian_bahan')
     return redirect('pemakaian_bahan_list')
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def rekap_pemakaian_bahan(request):
     data = PemakaianBahanBaku.objects.select_related(
         'bahan_baku_masuk',
@@ -430,6 +470,9 @@ def rekap_pemakaian_bahan(request):
     }
     return render(request, 'produksi/rekap_pemakaian_bahan.html', context)
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_produksi_list(request):
     data = HasilProduksi.objects.select_related(
         'proses_produksi',
@@ -485,6 +528,9 @@ from django.db.models.functions import Coalesce
 import logging
 logger = logging.getLogger(__name__)
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def ajax_bahan_by_proses(request):
     proses_id = request.GET.get('proses_id')
     if not proses_id:
@@ -521,7 +567,9 @@ def ajax_bahan_by_proses(request):
         print("------------------------------")
         return JsonResponse({'error': str(e)}, status=500)
 
-
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_produksi_add(request):
     if request.method == 'POST':
         pemakaian_id = request.POST['pemakaian_bahan']
@@ -572,6 +620,9 @@ def hasil_produksi_add(request):
 
     return redirect('hasil_produksi_list')
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_produksi_edit(request, id):
     hasil = get_object_or_404(HasilProduksi, id=id)
 
@@ -634,12 +685,18 @@ def hasil_produksi_edit(request, id):
 
     return redirect('hasil_produksi_list')
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def hasil_produksi_delete(request, id):
     get_object_or_404(HasilProduksi, id=id).delete()
     
     messages.success(request, "Hasil produksi berhasil dihapus!", extra_tags='hasil_produksi')
     return redirect('hasil_produksi_list')
 
+@login_required(login_url='login')
+@role_required('produksi')
+@never_cache
 def rekap_hasil_produksi(request):
     # Tambahkan filter isnull=False untuk memastikan hanya data yang sudah di-grade yang muncul
     data = HasilProduksi.objects.select_related(

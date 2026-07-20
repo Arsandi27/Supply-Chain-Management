@@ -13,27 +13,31 @@
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800 relative">
     {% include 'partials/message_popup.html' with page_tag='hasil_produksi' %}
     {% include 'parts/sidebar_produksi.html' %}
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
+    <main class="main-content">
         <div class="content">
             <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Hasil Produksi</h2>
             <div class="filter-container">
-                <button class=" btn-tambah" onclick="openAdd()">+ Tambah</button>
                 <form method="get" class="filter-form">
-                    <input type="text" name="search" placeholder="Cari nama atau quality..." value="{{ search|default:'' }}">
+                    <button type="button" class="btn-tambah" onclick="openAdd()">
+                        + Tambah
+                    </button>
+                    <input type="text" name="search"
+                        placeholder="Cari nama atau quality..."
+                        value="{{ search|default:'' }}">
                     <label>Dari</label>
                     <input type="date" name="date_from" value="{{ date_from|default:'' }}">
                     <label>Sampai</label>
                     <input type="date" name="date_to" value="{{ date_to|default:'' }}">
-
-                    <button type="submit" class="btn-filter">Filter</button>
-                    <a href="{% url 'hasil_produksi_list' %}">
-                        <button type="button" class="btn-reset">Reset</button></a>
-
-                    <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
+                    <button type="submit" class="btn-filter">Filter/Cari</button>
+                    <a href="{% url 'hasil_produksi_list' %}" class="btn-reset">
+                        Reset
+                    </a>
+                    <button type="button" class="btn-export" onclick="exportExcel()">
+                        Export Excel
+                    </button>
                 </form>
             </div>
             <br>
-
             <table id="hasilProduksiTable">
                 <tr>
                     <th>No</th>
@@ -229,10 +233,9 @@
             </form>
         </div>
     </div>
+    </body>
 
-</body>
 <script>
-
     function resetFormAddInput() {
         document.getElementById('tebal_add').value = '';
         document.getElementById('lebar_add').value = '';
@@ -350,7 +353,7 @@
     if (typeof setupAutoHitung === "function") {
         setupAutoHitung('edit');
     }
-}
+    }
     function openDelete(id) {
         document.getElementById('deleteModal').style.display = 'block';
         document.getElementById('deleteForm').action = '/produksi/hasil-produksi/delete/' + id + '/';
@@ -381,6 +384,6 @@
         XLSX.utils.book_append_sheet(wb, ws, "Hasil Produksi");
         XLSX.writeFile(wb, "hasil_produksi.xlsx");
     }
-</script>
+    </script>
 
 </html>

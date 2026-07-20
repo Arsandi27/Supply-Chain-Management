@@ -20,11 +20,11 @@
       <div class="content">
         <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Transaksi Penjualan</h2>
 
-        <div class="filter-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;">
-          <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
-
-          <form method="get" class="filter-form" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <input type="text" name="search" placeholder="Cari produk / pembeli..." value="{{ request.GET.search|default:'' }}" class="form-control" style="width: auto;" />
+        <div class="filter-container" style="display: flex; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+          
+          <form method="get" class="filter-form" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-grow: 1;">
+            <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
+            <input type="text" name="search" placeholder="Cari produk / pembeli..." value="{{ request.GET.search|default:'' }}" class="form-control" style="width: 180px;" />
 
             <span>Dari:</span>
             <input type="date" name="date_from" value="{{ date_from|default:'' }}" class="form-control" style="width: auto;" />
@@ -32,9 +32,9 @@
             <span>Sampai:</span>
             <input type="date" name="date_to" value="{{ date_to|default:'' }}" class="form-control" style="width: auto;" />
 
-            <button type="submit" class="btn-filter btn btn-primary">Filter</button>
-            <!-- Sesuaikan href dengan nama URL path untuk halaman ini di urls.py -->
-            <a href="{% url 'penjualan_list' %}" class="btn-reset btn btn-secondary">Reset</a>
+            <button type="submit" class="btn-filter">Filter/Cari</button>
+            <a href="{% url 'penjualan_list' %}" class="btn-reset">Reset</a>
+
             <button type="button" class="btn-export" onclick="exportToExcel('tablePenjualan', 'Data_Penjualan')">Export Excel</button>
           </form>
         </div>
@@ -49,8 +49,8 @@
               <th>Nama Quality</th>
               <th>Jumlah PCS</th>
               <th>Jumlah M³</th>
-              <th>Total Harga</th>
-              <th>Aksi</th>
+              <th style="width: 150px;">Total Harga</th>
+              <th style="width: 180px;">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -66,10 +66,10 @@
                 <td>{{ d.total_harga|rupiah }}</td>
                 <td>
                   <!-- Tombol Edit -->
-                  <button type="button" class="btn-action btn-edit" onclick="openEditModal('{{ d.id }}', '{{ d.tanggal_penjualan }}', '{{ d.hasil_produksi.id }}', '{{ d.pembeli.id }}', '{{ d.pcs }}', '{{ d.m3 }}', '{{ d.total_harga }}')"> Edit</button>
+                  <button type="button" class="btn-action btn-edit" onclick="openEditModal('{{ d.id }}', '{{ d.tanggal_penjualan|date:"Y-m-d" }}', '{{ d.hasil_produksi.id }}', '{{ d.pembeli.id }}', '{{ d.pcs }}', '{{ d.m3 }}', '{{ d.total_harga }}')">Edit</button>
 
                   <!-- Tombol Hapus -->
-                  <button type="button" class="btn-action btn-hapus" onclick="openDeleteModal('{{ d.id }}')"> Hapus</button>
+                  <button type="button" class="btn-action btn-hapus" onclick="openDeleteModal('{{ d.id }}')">Hapus</button>
                 </td>
               </tr>
             {% empty %}
@@ -255,10 +255,10 @@
     
       // --- Yang udah ada sebelumnya ---
       document.getElementById('editPcs').value = pcs
-      document.getElementById('editM3').value = m3
+      document.getElementById('editM3').value = String(m3).replace(',', '.')
     
       // Format Rupiah
-      const cleanTotal = total.toString().replace(/[^0-9]/g, '')
+      const cleanTotal = String(total).replace(',', '.').split('.')[0]
       document.getElementById('editTotal').value = cleanTotal
       document.getElementById('editTotalDisplay').value = formatRupiah(cleanTotal)
     

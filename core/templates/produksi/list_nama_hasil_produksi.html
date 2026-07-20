@@ -9,16 +9,16 @@
     <link rel="stylesheet" href="{% static 'css/produksi.css' %}">
 </head>
 
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800 relative">
     {% include 'partials/message_popup.html' with page_tag='nama_hasil_produksi' %}
     {% include 'parts/sidebar_produksi.html' %}
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
+    <main class="main-content">
     <div class="content">
         <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Data Nama Hasil Produksi</h2>
         <button class="btn-tambah" onclick="openAddModal()">+ Tambah</button>
 
         <br><br>
-
+        <div class="table-small">
         <table>
             <tr>
                 <th>No</th>
@@ -37,6 +37,7 @@
             </tr>
             {% endfor %}
         </table>
+        </div>
     </div>
     </main>
     <!-- ================= MODAL TAMBAH NAMA HASIL PRODUKSI ================= -->
@@ -102,8 +103,6 @@
         </div>
     </div>
     
-</body>
-
     <script>
         function openAddModal() {
             document.getElementById('addModal').style.display = 'block';
@@ -124,5 +123,7 @@
             document.getElementById(id).style.display = 'none';
         }
     </script>
+
+</body>
 
 </html>

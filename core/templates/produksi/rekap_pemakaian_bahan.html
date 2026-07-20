@@ -15,8 +15,7 @@
 
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
     {% include 'parts/sidebar_produksi.html' %}
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
-
+    <main class="main-content">
         <div class="content">
             <h2 class="text-2xl font-bold text-[#191970]" style="margin-bottom: 10px;">Mengelola Laporan Data Pemakaian Bahan</h2>
             <!-- ================= FILTER ================= -->
@@ -31,11 +30,11 @@
                         <button type="button" class="btn-reset">Reset</button>
                     </a>
                     <button type="button" onclick="exportExcel()" class="btn-export">Export Excel</button>
-                    <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
+                    <button type="button" class="btn-print" onclick="printPDF()">Export PDF</button>
                 </form>
             </div>
-
             <!-- ================= TABLE ================= -->
+            <div class="table-small">
             <table id="rekapTable">
                 <thead>
                     <tr>
@@ -75,6 +74,7 @@
                     </tr>
                 </tfoot>
             </table>
+            </div>
         </div>
     </main>
     <!-- ================= EXPORT ================= -->
@@ -89,8 +89,7 @@
             const today = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `rekap_pemakaian_bahan_${today}.xlsx`);
         }
-
-    async function printPDF() {
+async function printPDF() {
     const { jsPDF } = window.jspdf;
 
     const doc = new jsPDF('p', 'mm', 'a4');
@@ -200,13 +199,24 @@
 
     // ===== TANDA TANGAN =====
     const today = new Date().toLocaleDateString('id-ID');
-
     doc.setFont("helvetica", "normal");
 
-
-    // ===== SAVE PDF =====
-    const todayFile = new Date().toISOString().slice(0, 10);
-    doc.save(`rekap_pemakaian_bahan_${todayFile}.pdf`);
+    // ===== UBAH KE MODE PRINT =====
+    // Mengubah hasil render PDF menjadi Blob URL
+    const blobUrl = doc.output('bloburl');
+    
+    // Membuka PDF di jendela/tab baru browser
+    const printWindow = window.open(blobUrl, '_blank');
+    
+    // Memicu dialog cetak otomatis saat jendela baru dimuat
+    if (printWindow) {
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    } else {
+        // Jika pop-up diblokir oleh sistem browser user
+        alert("Gagal membuka jendela cetak. Pastikan pengaturan pop-up browser Anda tidak diblokir.");
+    }
 }
     </script>
 

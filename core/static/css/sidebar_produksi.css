@@ -80,9 +80,15 @@
     object-fit: cover;
 }
 
-.content {
+.main-content {
     margin-left: 256px;
-    /* > sidebar width */
+    height: 100vh;
+    overflow-y: auto;
+    background: #f9fafb;
+}
+
+.content {
+    margin-left: 0;
     padding: 20px;
 }
 

@@ -30,7 +30,7 @@
                     <button type="submit" class="btn-filter">Filter</button>
                     <a href="{% url 'rekap_penjualan' %}" class="btn-reset">Reset</a>
                     <button type="button" class="btn-export" onclick="exportExcel()">Export Excel</button>
-                    <button type="button" class="btn-print" onclick="printPDF()">Print PDF</button>
+                    <button type="button" class="btn-print" onclick="printPDF()">Export PDF</button>
                 </form>
             </div>
             <br>
@@ -102,11 +102,12 @@ async function printPDF() {
     // ===== HEADER =====
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text("LAPORAN REKAP PENJUALAN", 105, 15, { align: "center" });
+    doc.text("LAPORAN DATA HASIL PRODUKSI", 105, 15, { align: "center" });
 
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
 
+    // Mengambil nilai variabel start dan end dari konteks Django template
     const start = "{{ start|default:'-' }}";
     const end = "{{ end|default:'-' }}";
 
@@ -122,7 +123,8 @@ async function printPDF() {
             row.push(td.innerText.trim());
         });
 
-        if (row.length > 0) {
+        // Memastikan tidak memasukkan baris kosong "Data tidak ada" ke dalam array pdf
+        if (row.length > 0 && row[0] !== "Data tidak ada") {
             rows.push(row);
         }
     });
@@ -133,51 +135,49 @@ async function printPDF() {
         theme: 'grid', 
         head: [[
             "No",
-            "Tanggal Penjualan",
+            "Tanggal Produksi",
             "Nama Produk",
-            "Nama Pembeli",
+            "Quality",
             "PCS",
-            "M³",
-            "Total Harga (RP)"
+            "M³"
         ]],
         body: rows,
         foot: [[
             { content: 'TOTAL', colSpan: 4, styles: { halign: 'center' } },
             "{{ total_pcs }}",
-            "{{ total_m3|floatformat:3 }}",
-            "{{ total_penjualan|rupiah }}"
+            "{{ total_m3|floatformat:3 }}"
         ]],
         styles: {
             fontSize: 9,
             cellPadding: 3,
             textColor: [0, 0, 0],
-            lineWidth: 0.1,         // Mengaktifkan garis di seluruh sel tabel
-            lineColor: [180, 180, 180] // Warna abu-abu pembatas garis (bisa disesuaikan kegelapannya)
+            lineWidth: 0.1,         // Garis pembatas tebal tipis merata ke seluruh sel
+            lineColor: [180, 180, 180] 
         },
         headStyles: {
-            fillColor: [211, 211, 211], 
+            fillColor: [211, 211, 211], // Warna abu-abu solid untuk thead
             textColor: [0, 0, 0],
             halign: 'center',
             fontStyle: 'bold',
-            lineWidth: 0.1,         // Memaksa garis luar thead muncul
+            lineWidth: 0.1,         // Menjaga garis vertikal pembatas luar tetap nyambung
             lineColor: [180, 180, 180]
         },
         bodyStyles: {
             valign: 'middle'
         },
         footStyles: {
-            fillColor: [211, 211, 211], 
+            fillColor: [211, 211, 211], // Warna abu-abu solid untuk tfoot
             textColor: [0, 0, 0],
             fontStyle: 'bold',
-            lineWidth: 0.1,         // Memaksa garis luar tfoot muncul
+            lineWidth: 0.1,         // Menjaga garis vertikal tfoot tetap lurus ke bawah
             lineColor: [180, 180, 180]
         },
         columnStyles: {
-            0: { halign: 'center', cellWidth: 10 },
+            0: { halign: 'center', cellWidth: 12 },
             1: { halign: 'center' },
+            3: { halign: 'center' },
             4: { halign: 'center' },
-            5: { halign: 'center' },
-            6: { halign: 'right' }
+            5: { halign: 'center' }
         }
     });
 
@@ -200,24 +200,31 @@ async function printPDF() {
     );
 
     doc.text(
-        `TOTAL PENJUALAN : {{ total_penjualan|rupiah }}`,
+        `JUMLAH TRANSAKSI : {{ total_transaksi }}`,
         14,
         finalY + 14
     );
 
-    doc.text(
-        `JUMLAH TRANSAKSI : {{ total_transaksi }}`,
-        14,
-        finalY + 21
-    );
-
     // ===== TANDA TANGAN =====
     const today = new Date().toLocaleDateString('id-ID');
-
     doc.setFont("helvetica", "normal");
 
-    // ===== SAVE PDF =====
-    doc.save("laporan_rekap_penjualan.pdf");
+    // ===== UBAH KE MODE PRINT =====
+    // Membuat berkas PDF menjadi objek URL (Blob URL)
+    const blobUrl = doc.output('bloburl');
+    
+    // Buka berkas PDF di tab baru
+    const printWindow = window.open(blobUrl, '_blank');
+    
+    // Jalankan perintah print otomatis ketika halaman tab baru selesai dimuat
+    if (printWindow) {
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    } else {
+        // Jika browser memblokir pembukaan tab otomatis (pop-up blocker)
+        alert("Gagal membuka jendela cetak. Mohon izinkan pop-up pada browser Anda.");
+    }
 }
 </script>
 </body>
